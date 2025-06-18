@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiGi.GIS.Analytical", "DiGi.GIS.Analytical\DiGi.GIS.Analytical.csproj", "{6AD0976B-BC80-4867-B3CD-A25A399FBB5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AD0976B-BC80-4867-B3CD-A25A399FBB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AD0976B-BC80-4867-B3CD-A25A399FBB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AD0976B-BC80-4867-B3CD-A25A399FBB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AD0976B-BC80-4867-B3CD-A25A399FBB5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4C9D8FE0-6CFA-45DC-9FB3-F4E9E8FCC003}
+	EndGlobalSection
+EndGlobal
