@@ -1,7 +1,6 @@
 ﻿using DiGi.Analytical.Building.Classes;
 using DiGi.CityGML;
 using DiGi.CityGML.Classes;
-using DiGi.CityGML.Enums;
 using DiGi.CityGML.Interfaces;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.Geometry.Planar.Interfaces;
@@ -74,6 +73,7 @@ namespace DiGi.GIS.Analytical
                     }
 
                     building2Ds_Unidentified.Add(building2D);
+                    continue;
                 }
 
                 buildingModel.SetValue(BuildingModelParameter.Reference, building2D.Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
