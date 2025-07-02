@@ -202,15 +202,39 @@ namespace DiGi.GIS.Analytical
 
                             Point3D point3D = new Point3D(point2D.X, point2D.Y, building.BoundingBox().Min.Z);
 
+                            double elevation_Point3D = point3D.Z;
+                            if(double.IsNaN(elevation_Point3D))
+                            {
+                                continue;
+                            }
+
                             Point3D point3D_Closest = building.ClosestPoint(point3D, tolerance);
+                            if(double.IsNaN(point3D_Closest.Z))
+                            {
+                                continue;
+                            }
 
                             distance_Point2D = point3D.Distance(point3D_Closest);
+                            if(double.IsNaN(distance_Point2D))
+                            {
+                                continue;
+                            }
+
+                            if(distance_Point2D == 0)
+                            {
+                                elevation = elevation_Point3D;
+                                distance = 0;
+                                break;
+                            }
 
                             elevation += (point3D_Closest.Z * distance_Point2D);
                             distance += distance_Point2D;
                         }
 
-                        elevation = elevation / distance;
+                        if(distance > 0)
+                        {
+                            elevation = elevation / distance;
+                        }
 
                         plane = Geometry.Spatial.Create.Plane(elevation);
 

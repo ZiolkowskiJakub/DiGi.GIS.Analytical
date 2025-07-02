@@ -18,7 +18,7 @@ namespace DiGi.GIS.Analytical
             HashSet<UniqueReference> uniqueReferences = new HashSet<UniqueReference>();
             foreach (string reference in references)
             {
-                UniqueReference uniqueReference = OrtoDatasFile.GetUniqueReference(reference);
+                UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(reference);
                 if (uniqueReference == null)
                 {
                     continue;
