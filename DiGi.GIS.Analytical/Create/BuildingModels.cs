@@ -43,7 +43,7 @@ namespace DiGi.GIS.Analytical
 
             List<List<CityModel>> cityModelsList = Enumerable.Repeat<List<CityModel>>(null, paths_CityGML.Length).ToList();
 
-            Parallel.For(0, paths_CityGML.Length, GIS.Query.DefaultParallelOptions() , i => 
+            Parallel.For(0, paths_CityGML.Length, Core.Create.ParallelOptions() , i => 
             {
                 cityModelsList[i] = CityGML.Create.CityModels(paths_CityGML[i]);
             });
