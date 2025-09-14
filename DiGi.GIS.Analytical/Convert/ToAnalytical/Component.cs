@@ -8,14 +8,14 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Convert
     {
-        public static IComponent ToAnalytical(this ISurface surface)
+        public static IComponent? ToAnalytical(this ISurface? surface)
         {
             if(surface == null)
             {
                 return null;
             }
 
-            IPolygonalFace3D polygonalFace3D = surface.Geometry;
+            IPolygonalFace3D? polygonalFace3D = surface.Geometry;
             if(polygonalFace3D == null)
             {
                 return null;

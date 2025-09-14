@@ -19,15 +19,15 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
-        public static List<BuildingModel> BuildingModels(this GISModelFile gISModelFile, string directory_CityGML, double tolerance = Core.Constans.Tolerance.Distance)
+        public static List<BuildingModel>? BuildingModels(this GISModelFile? gISModelFile, string directory_CityGML, double tolerance = Core.Constans.Tolerance.Distance)
         {
-            string path = gISModelFile?.Path;
+            string? path = gISModelFile?.Path;
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
             {
                 return null;
             }
 
-            List<Building2D> building2Ds = gISModelFile.Value?.GetObjects<Building2D>();
+            List<Building2D>? building2Ds = gISModelFile?.Value?.GetObjects<Building2D>();
             if (building2Ds == null || building2Ds.Count == 0)
             {
                 return null;
@@ -41,15 +41,15 @@ namespace DiGi.GIS.Analytical
 
             string[] paths_CityGML = Directory.GetFiles(directory_CityGML, string.Format("{0}.zip", fileName), SearchOption.AllDirectories);
 
-            List<List<CityModel>> cityModelsList = Enumerable.Repeat<List<CityModel>>(null, paths_CityGML.Length).ToList();
+            List<List<CityModel>?>? cityModelsList = [.. Enumerable.Repeat<List<CityModel>?>(null, paths_CityGML.Length)];
 
             Parallel.For(0, paths_CityGML.Length, Core.Create.ParallelOptions() , i => 
             {
                 cityModelsList[i] = CityGML.Create.CityModels(paths_CityGML[i]);
             });
 
-            List<CityModel> cityModels = new List<CityModel>();
-            foreach (List<CityModel> cityModels_Temp in cityModelsList)
+            List<CityModel> cityModels = [];
+            foreach (List<CityModel>? cityModels_Temp in cityModelsList)
             {
                 if (cityModels_Temp != null && cityModels_Temp.Count != 0)
                 {
@@ -58,13 +58,13 @@ namespace DiGi.GIS.Analytical
             }
 
 
-            List<BuildingModel> result = new List<BuildingModel>();
+            List<BuildingModel> result = [];
 
-            List<Building2D> building2Ds_Unidentified = new List<Building2D>();
+            List<Building2D> building2Ds_Unidentified = [];
 
             foreach (Building2D building2D in building2Ds)
             {
-                BuildingModel buildingModel = BuildingModel(building2D, cityModels, tolerance);
+                BuildingModel? buildingModel = BuildingModel(building2D, cityModels, tolerance);
                 if (buildingModel == null)
                 {
                     if(building2D?.PolygonalFace2D == null)
@@ -84,27 +84,32 @@ namespace DiGi.GIS.Analytical
             {
                 Plane plane = Geometry.Spatial.Constans.Plane.WorldZ;
 
-                List<Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building>> tuples = new List<Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building>>();
+                List<Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building>> tuples = [];
                 foreach (CityModel cityModel in cityModels)
                 {
-                    IEnumerable<Building> buildings = cityModel.Buildings;
+                    IEnumerable<Building>? buildings = cityModel.Buildings;
                     if(buildings == null || buildings.Count() == 0)
                     {
                         continue;
                     }
 
-                    foreach (Building building in cityModel.Buildings)
+                    foreach (Building? building in buildings)
                     {
-                        List<IPolygonalFace2D> polygonalFace2Ds = new List<IPolygonalFace2D>();
-                        foreach (ISurface surface in building.Surfaces)
+                        if(building?.Surfaces is not IEnumerable<ISurface> surfaces)
                         {
-                            IPolygonalFace3D polygonalFace3D = Geometry.Spatial.Query.Project<IPolygonalFace3D>(plane, surface.Geometry, tolerance);
+                            continue;
+                        }
+
+                        List<IPolygonalFace2D>? polygonalFace2Ds = [];
+                        foreach (ISurface surface in surfaces)
+                        {
+                            IPolygonalFace3D? polygonalFace3D = Geometry.Spatial.Query.Project<IPolygonalFace3D>(plane, surface.Geometry, tolerance);
                             if (polygonalFace3D == null)
                             {
                                 continue;
                             }
 
-                            IPolygonalFace2D polygonalFace2D = plane.Convert(polygonalFace3D);
+                            IPolygonalFace2D? polygonalFace2D = plane.Convert(polygonalFace3D);
                             if (polygonalFace2D == null)
                             {
                                 continue;
@@ -119,14 +124,14 @@ namespace DiGi.GIS.Analytical
                             polygonalFace2Ds.Add(polygonalFace2D);
                         }
 
+                        polygonalFace2Ds = Geometry.Planar.Query.Union(polygonalFace2Ds);
+
                         if (polygonalFace2Ds == null || polygonalFace2Ds.Count == 0)
                         {
                             continue;
                         }
 
-                        polygonalFace2Ds = Geometry.Planar.Query.Union(polygonalFace2Ds);
-
-                        BoundingBox2D boundingBox2D = Geometry.Planar.Create.BoundingBox2D(polygonalFace2Ds);
+                        BoundingBox2D? boundingBox2D = Geometry.Planar.Create.BoundingBox2D(polygonalFace2Ds);
                         if(boundingBox2D == null)
                         {
                             continue;
@@ -140,7 +145,7 @@ namespace DiGi.GIS.Analytical
                 {
                     for(int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
                     {
-                        Point2D point2D = building2Ds_Unidentified[i].PolygonalFace2D.GetInternalPoint();
+                        Point2D? point2D = building2Ds_Unidentified[i]?.PolygonalFace2D?.GetInternalPoint();
                         if (point2D == null)
                         {
                             continue;
@@ -158,7 +163,7 @@ namespace DiGi.GIS.Analytical
                             continue;
                         }
 
-                        BuildingModel buildingModel = BuildingModel(tuples_Temp[0].Item3, tolerance);
+                        BuildingModel? buildingModel = BuildingModel(tuples_Temp[0].Item3, tolerance);
                         if (buildingModel == null)
                         {
                             continue;
@@ -173,8 +178,8 @@ namespace DiGi.GIS.Analytical
 
                     for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
                     {
-                        IPolygonalFace2D polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
-                        List<Point2D> point2Ds = polygonalFace2D.ExternalEdge.GetPoints();
+                        IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
+                        List<Point2D>? point2Ds = polygonalFace2D?.ExternalEdge?.GetPoints();
                         if(point2Ds == null || point2Ds.Count == 0)
                         {
                             continue;
@@ -184,7 +189,7 @@ namespace DiGi.GIS.Analytical
                         foreach(Point2D point2D in point2Ds)
                         {
                             double distance_Point2D = double.MaxValue;
-                            Building building = null;
+                            Building? building = null;
                             foreach(Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building> tuple in tuples)
                             {
                                 double distance_BoundingBox2D = tuple.Item1.Distance(point2D);
@@ -195,12 +200,18 @@ namespace DiGi.GIS.Analytical
                                 }
                             }
 
-                            if(building == null)
+                            if(building is null)
                             {
                                 continue;
                             }
 
-                            Point3D point3D = new Point3D(point2D.X, point2D.Y, building.BoundingBox().Min.Z);
+                            Point3D? min = building.BoundingBox()?.Min;
+                            if(min is null)
+                            {
+                                continue;
+                            }
+
+                            Point3D point3D = new (point2D.X, point2D.Y, min.Z);
 
                             double elevation_Point3D = point3D.Z;
                             if(double.IsNaN(elevation_Point3D))
@@ -208,8 +219,8 @@ namespace DiGi.GIS.Analytical
                                 continue;
                             }
 
-                            Point3D point3D_Closest = building.ClosestPoint(point3D, tolerance);
-                            if(double.IsNaN(point3D_Closest.Z))
+                            Point3D? point3D_Closest = building.ClosestPoint(point3D, tolerance);
+                            if(point3D_Closest == null || double.IsNaN(point3D_Closest.Z))
                             {
                                 continue;
                             }
@@ -233,20 +244,23 @@ namespace DiGi.GIS.Analytical
 
                         if(distance > 0)
                         {
-                            elevation = elevation / distance;
+                            elevation /= distance;
                         }
 
-                        plane = Geometry.Spatial.Create.Plane(elevation);
+                        if(Geometry.Spatial.Create.Plane(elevation) is Plane plane_Temp)
+                        {
+                            plane = plane_Temp;
+                        }
 
-                        IPolygonalFace3D polygonalFace3D = plane.Convert(polygonalFace2D);
+                        IPolygonalFace3D? polygonalFace3D = plane.Convert(polygonalFace2D);
 
-                        Polyhedron polyhedron = Geometry.Spatial.Create.Polyhedron(polygonalFace3D, plane.Normal * storeyHeight);
+                        Polyhedron? polyhedron = Geometry.Spatial.Create.Polyhedron(polygonalFace3D, plane.Normal * storeyHeight);
                         if(polyhedron == null)
                         {
                             continue;
                         }
 
-                        BuildingModel buildingModel = BuildingModel(polyhedron, tolerance);
+                        BuildingModel? buildingModel = BuildingModel(polyhedron, tolerance);
                         if (buildingModel == null)
                         {
                             continue;

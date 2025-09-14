@@ -8,12 +8,12 @@ namespace DiGi.GIS.Classes
 {
     public class BuildingModelsFile : Core.IO.File.Classes.StorageFile<BuildingModel>, IGISObject
     {
-        public override UniqueReference GetUniqueReference(BuildingModel buildingModel)
+        public override UniqueReference? GetUniqueReference(BuildingModel? buildingModel)
         {
-            return GetUniqueReference(buildingModel.GetValue<string>(BuildingModelParameter.Reference, new Core.Parameter.Classes.GetValueSettings(true, false)));
+            return GetUniqueReference(buildingModel?.GetValue<string>(BuildingModelParameter.Reference, new Core.Parameter.Classes.GetValueSettings(true, false)));
         }
 
-        public static UniqueReference GetUniqueReference(string reference)
+        public static UniqueReference? GetUniqueReference(string? reference)
         {
             if(reference == null)
             {
@@ -23,19 +23,19 @@ namespace DiGi.GIS.Classes
             return new UniqueIdReference(typeof(BuildingModel), reference);
         }
 
-        public BuildingModelsFile(BuildingModelsFile buildingModelsFile)
+        public BuildingModelsFile(BuildingModelsFile? buildingModelsFile)
             : base(buildingModelsFile)
         {
 
         }
 
-        public BuildingModelsFile(JsonObject jsonObject)
+        public BuildingModelsFile(JsonObject? jsonObject)
             :base(jsonObject)
         {
 
         }
 
-        public BuildingModelsFile(string path)
+        public BuildingModelsFile(string? path)
             : base(path) 
         {
             

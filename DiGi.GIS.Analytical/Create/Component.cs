@@ -8,9 +8,9 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
-        public static IComponent Component(this IPolygonalFace3D polygonalFace3D, Polyhedron polyhedron, double tolerance = Core.Constans.Tolerance.Distance)
+        public static IComponent? Component(this IPolygonalFace3D? polygonalFace3D, Polyhedron? polyhedron, double tolerance = Core.Constans.Tolerance.Distance)
         {
-            Vector3D normal = polygonalFace3D?.Plane?.Normal;
+            Vector3D? normal = polygonalFace3D?.Plane?.Normal;
             if (normal == null)
             {
                 return null;
@@ -23,26 +23,28 @@ namespace DiGi.GIS.Analytical
 
             if (polyhedron != null)
             {
-                Point3D point3D = polygonalFace3D.GetInternalPoint(tolerance);
-
-                IntersectionResult3D intersectionResult3D = Geometry.Spatial.Create.IntersectionResult3D(polyhedron, new Line3D(point3D, Geometry.Spatial.Constans.Vector3D.WorldZ));
-                if(intersectionResult3D != null && intersectionResult3D.Intersect)
+                Point3D? point3D = polygonalFace3D?.GetInternalPoint(tolerance);
+                if(point3D is not null)
                 {
-                    List<Point3D> point3Ds = intersectionResult3D.GetGeometry3Ds<Point3D>();
-                    if(point3Ds != null || point3Ds.Count == 0)
+                    IntersectionResult3D? intersectionResult3D = Geometry.Spatial.Create.IntersectionResult3D(polyhedron, new Line3D(point3D, Geometry.Spatial.Constans.Vector3D.WorldZ));
+                    if (intersectionResult3D != null && intersectionResult3D.Intersect)
                     {
-                        point3Ds.RemoveAll(x => point3D.Z >= x.Z || point3D.AlmostEquals(x, tolerance));
-                    }
+                        List<Point3D>? point3Ds = intersectionResult3D.GetGeometry3Ds<Point3D>();
+                        if (point3Ds != null && point3Ds.Count != 0)
+                        {
+                            point3Ds.RemoveAll(x => point3D.Z >= x.Z || point3D.AlmostEquals(x, tolerance));
+                        }
 
-                    if(point3Ds == null || point3Ds.Count == 0)
-                    {
-                        return new SurfaceRoof(polygonalFace3D);
-                    }
-                    else
-                    {
-                        return new FaceFloor(polygonalFace3D);
-                    }
+                        if (point3Ds == null || point3Ds.Count == 0)
+                        {
+                            return new SurfaceRoof(polygonalFace3D);
+                        }
+                        else
+                        {
+                            return new FaceFloor(polygonalFace3D);
+                        }
 
+                    }
                 }
             }
 

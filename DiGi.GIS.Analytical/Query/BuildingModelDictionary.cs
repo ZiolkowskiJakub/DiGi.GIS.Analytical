@@ -1,5 +1,6 @@
 ﻿using DiGi.Analytical.Building.Classes;
 using DiGi.Core.Classes;
+using DiGi.Core.Interfaces;
 using DiGi.GIS.Classes;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,18 +9,18 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Query
     {
-        public static Dictionary<string, BuildingModel> BuildingModelDictionary(string path, IEnumerable<string> references)
+        public static Dictionary<string, BuildingModel>? BuildingModelDictionary(string? path, IEnumerable<string>? references)
         {
             if(string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path) || references == null)
             {
                 return null;
             }
 
-            HashSet<UniqueReference> uniqueReferences = new HashSet<UniqueReference>();
+            HashSet<UniqueReference> uniqueReferences = [];
             foreach (string reference in references)
             {
-                UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(reference);
-                if (uniqueReference == null)
+                UniqueReference? uniqueReference = BuildingModelsFile.GetUniqueReference(reference);
+                if (uniqueReference is null)
                 {
                     continue;
                 }
@@ -27,19 +28,19 @@ namespace DiGi.GIS.Analytical
                 uniqueReferences.Add(uniqueReference);
             }
 
-            Dictionary<string, BuildingModel> result = new Dictionary<string, BuildingModel>();
+            Dictionary<string, BuildingModel> result = [];
 
             if (uniqueReferences.Count == 0)
             {
                 return result;
             }
 
-            List<BuildingModel> buildingModels = null;
-            using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path))
+            List<BuildingModel>? buildingModels = null;
+            using (BuildingModelsFile buildingModelsFile = new (path))
             {
                 buildingModelsFile.Open();
 
-                buildingModels = buildingModelsFile.GetValues<BuildingModel>(uniqueReferences)?.ToList();
+                buildingModels =Core.Query.FilterNulls(buildingModelsFile.GetValues<BuildingModel>(uniqueReferences));
             }
 
             if (buildingModels == null)
@@ -56,7 +57,12 @@ namespace DiGi.GIS.Analytical
 
                 UniqueReference uniqueReference = uniqueReferences.ElementAt(i);
 
-                result[uniqueReference.UniqueId] = buildingModels[i];
+                if (uniqueReference.UniqueId is not string uniqueId)
+                {
+                    continue;
+                }
+
+                result[uniqueId] = buildingModels[i];
                 uniqueReferences.Remove(uniqueReference);
 
                 if (uniqueReferences.Count == 0)
@@ -68,7 +74,7 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
-        public static Dictionary<string, BuildingModel> BuildingModelDictionary(GISModelFile gISModelFile, IEnumerable<string> references)
+        public static Dictionary<string, BuildingModel>? BuildingModelDictionary(GISModelFile? gISModelFile, IEnumerable<string>? references)
         {
             if(gISModelFile == null || references == null)
             {

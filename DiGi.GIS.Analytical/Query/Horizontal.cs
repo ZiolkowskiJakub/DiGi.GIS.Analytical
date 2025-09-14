@@ -5,14 +5,17 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Query
     {
-        public static bool Horizontal(this Vector3D vector3D, double tolerance = Core.Constans.Tolerance.Angle)
+        public static bool Horizontal(this Vector3D? vector3D, double tolerance = Core.Constans.Tolerance.Angle)
         {
             if (vector3D == null)
             {
                 return false;
             }
 
-            Vector3D unit = vector3D.Unit;
+            if(vector3D?.Unit is not Vector3D unit)
+            {
+                return false;
+            }
 
             // Compute angle between vector and Up (0, 0, 1)
             double angle = System.Math.Acos(System.Math.Abs(unit.DotProduct(Geometry.Spatial.Constans.Vector3D.WorldZ)));

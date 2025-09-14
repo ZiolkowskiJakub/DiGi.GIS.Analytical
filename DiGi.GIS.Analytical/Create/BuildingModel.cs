@@ -14,44 +14,44 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
-        public static BuildingModel BuildingModel(this Building2D building2D, IEnumerable<CityModel> cityModels, double tolerance = Core.Constans.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building2D? building2D, IEnumerable<CityModel>? cityModels, double tolerance = Core.Constans.Tolerance.Distance)
         {
             if (building2D == null)
             {
                 return null;
             }
 
-            Building building = Query.Building(building2D, cityModels);
+            Building? building = Query.Building(building2D, cityModels);
             if (building == null)
             {
                 return null;
             }
 
-            BuildingModel result = BuildingModel(building, tolerance);
+            BuildingModel? result = BuildingModel(building, tolerance);
 
             return result;
         }
 
-        public static BuildingModel BuildingModel(this Building building, double tolerance = Core.Constans.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building? building, double tolerance = Core.Constans.Tolerance.Distance)
         {
-            IEnumerable<ISurface> surfaces = building?.Surfaces;
+            IEnumerable<ISurface>? surfaces = building?.Surfaces;
             if (surfaces == null || surfaces.Count() == 0)
             {
                 return null;
             }
 
-            Polyhedron polyhedron = building.Polyhedron();
+            Polyhedron? polyhedron = building.Polyhedron();
 
-            BuildingModel result = new BuildingModel();
+            BuildingModel result = new ();
             LOD lOD = LOD.LOD2;
 
-            List<IComponent> components = new List<IComponent>();
+            List<IComponent> components = [];
             foreach (ISurface surface in surfaces)
             {
-                IComponent component = surface.ToAnalytical();
+                IComponent? component = surface.ToAnalytical();
                 if(component == null)
                 {
-                    component = Component(surface.Geometry, polyhedron, tolerance);
+                    component = Component(surface?.Geometry, polyhedron, tolerance);
                     if(component == null)
                     {
                         continue;
@@ -66,7 +66,7 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
-            Space space = new Space(polyhedron.GetInternalPoint(), building.UniqueId);
+            Space space = new (polyhedron?.GetInternalPoint(), building?.UniqueId);
             result.Update(space);
             foreach(IComponent component in components)
             {
@@ -78,19 +78,19 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
-        public static BuildingModel BuildingModel(this Polyhedron polyhedron, double tolerance = Core.Constans.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Polyhedron? polyhedron, double tolerance = Core.Constans.Tolerance.Distance)
         {
-            IEnumerable<IPolygonalFace3D> polygonalFace3Ds = polyhedron?.PolygonalFaces;
+            IEnumerable<IPolygonalFace3D>? polygonalFace3Ds = polyhedron?.PolygonalFaces;
             if (polygonalFace3Ds == null || polygonalFace3Ds.Count() == 0)
             {
                 return null;
             }
 
-            BuildingModel result = new BuildingModel();
-            List<IComponent> components = new List<IComponent>();
+            BuildingModel result = new ();
+            List<IComponent> components = [];
             foreach (IPolygonalFace3D polygonalFace3D in polygonalFace3Ds)
             {
-                IComponent component = Component(polygonalFace3D, polyhedron, tolerance);
+                IComponent? component = Component(polygonalFace3D, polyhedron, tolerance);
                 if (component == null)
                 {
                     continue;
@@ -102,7 +102,7 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
-            Space space = new Space(polyhedron.GetInternalPoint(), "Building");
+            Space space = new (polyhedron?.GetInternalPoint(), "Building");
             result.Update(space);
             foreach (IComponent component in components)
             {

@@ -11,15 +11,20 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Query
     {
-        public static Building Building(this Building2D building2D, IEnumerable<CityModel> cityModels)
+        public static Building? Building(this Building2D? building2D, IEnumerable<CityModel>? cityModels)
         {
-            string reference = building2D?.Reference;
+            if(cityModels is null)
+            {
+                return null;
+            }
+
+            string? reference = building2D?.Reference;
             if (reference == null)
             {
                 return null;
             }
 
-            List<Tuple<LOD?, int?, Building>> tuples = new List<Tuple<LOD?, int?, Building>>();
+            List<Tuple<LOD?, int?, Building>> tuples = [];
             foreach (CityModel cityModel in cityModels)
             {
                 LOD? lOD = null;
@@ -36,7 +41,7 @@ namespace DiGi.GIS.Analytical
                 }
 
 
-                Building building = cityModel.Buildings.Find(x => x.Reference() == reference);
+                Building? building = cityModel.Buildings.Find(x => x.Reference() == reference);
                 if (building == null)
                 {
                     continue;
@@ -56,12 +61,12 @@ namespace DiGi.GIS.Analytical
             if(tuples_Temp != null && tuples_Temp.Count > 0)
             {
                 List<Tuple<LOD?, int?, Building>> tuples_Temp_Year = tuples_Temp.FindAll(x => x.Item2 != null && x.Item2.HasValue);
-                if(tuples_Temp_Year == null && tuples_Temp_Year.Count == 0)
+                if(tuples_Temp_Year == null || tuples_Temp_Year.Count == 0)
                 {
                     return tuples_Temp[0].Item3;
                 }
 
-                tuples_Temp_Year.Sort((x, y) => x.Item2.Value.CompareTo(y.Item2.Value));
+                tuples_Temp_Year.Sort((x, y) => x.Item2!.Value.CompareTo(y.Item2!.Value));
 
                 return tuples_Temp_Year.Last().Item3;
             }
@@ -70,12 +75,12 @@ namespace DiGi.GIS.Analytical
             if (tuples_Temp != null && tuples_Temp.Count > 0)
             {
                 List<Tuple<LOD?, int?, Building>> tuples_Temp_Year = tuples_Temp.FindAll(x => x.Item2 != null && x.Item2.HasValue);
-                if (tuples_Temp_Year == null && tuples_Temp_Year.Count == 0)
+                if (tuples_Temp_Year == null || tuples_Temp_Year.Count == 0)
                 {
                     return tuples_Temp[0].Item3;
                 }
 
-                tuples_Temp_Year.Sort((x, y) => x.Item2.Value.CompareTo(y.Item2.Value));
+                tuples_Temp_Year.Sort((x, y) => x.Item2!.Value.CompareTo(y.Item2!.Value));
 
                 return tuples_Temp_Year.Last().Item3;
             }
