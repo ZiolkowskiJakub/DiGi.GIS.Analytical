@@ -84,7 +84,7 @@ namespace DiGi.GIS.Analytical
             {
                 Plane plane = Geometry.Spatial.Constans.Plane.WorldZ;
 
-                List<Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building>> tuples = [];
+                List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples = [];
                 foreach (CityModel cityModel in cityModels)
                 {
                     IEnumerable<Building>? buildings = cityModel.Buildings;
@@ -100,16 +100,16 @@ namespace DiGi.GIS.Analytical
                             continue;
                         }
 
-                        List<IPolygonalFace2D>? polygonalFace2Ds = [];
+                        List<PolygonalFace2D>? polygonalFace2Ds = [];
                         foreach (ISurface surface in surfaces)
                         {
-                            IPolygonalFace3D? polygonalFace3D = Geometry.Spatial.Query.Project<IPolygonalFace3D>(plane, surface.Geometry, tolerance);
+                            PolygonalFace3D? polygonalFace3D = Geometry.Spatial.Query.Project<PolygonalFace3D>(plane, surface.Geometry, tolerance);
                             if (polygonalFace3D == null)
                             {
                                 continue;
                             }
 
-                            IPolygonalFace2D? polygonalFace2D = plane.Convert(polygonalFace3D);
+                            PolygonalFace2D? polygonalFace2D = plane.Convert(polygonalFace3D);
                             if (polygonalFace2D == null)
                             {
                                 continue;
@@ -137,7 +137,7 @@ namespace DiGi.GIS.Analytical
                             continue;
                         }
 
-                        tuples.Add(new Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building>(boundingBox2D, polygonalFace2Ds, building));
+                        tuples.Add(new Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>(boundingBox2D, polygonalFace2Ds, building));
                     }
                 }
 
@@ -151,7 +151,7 @@ namespace DiGi.GIS.Analytical
                             continue;
                         }
 
-                        List<Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building>> tuples_Temp = tuples.FindAll(x => x.Item1.InRange(point2D, tolerance));
+                        List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples_Temp = tuples.FindAll(x => x.Item1.InRange(point2D, tolerance));
                         if (tuples_Temp == null || tuples_Temp.Count == 0)
                         {
                             continue;
@@ -190,7 +190,7 @@ namespace DiGi.GIS.Analytical
                         {
                             double distance_Point2D = double.MaxValue;
                             Building? building = null;
-                            foreach(Tuple<BoundingBox2D, List<IPolygonalFace2D>, Building> tuple in tuples)
+                            foreach(Tuple<BoundingBox2D, List<PolygonalFace2D>, Building> tuple in tuples)
                             {
                                 double distance_BoundingBox2D = tuple.Item1.Distance(point2D);
                                 if(distance_BoundingBox2D < distance_Point2D)

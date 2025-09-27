@@ -1,6 +1,5 @@
 ﻿using DiGi.Analytical.Building.Classes;
 using DiGi.Core.Classes;
-using DiGi.Core.Interfaces;
 using DiGi.GIS.Classes;
 using System.Collections.Generic;
 using System.Linq;
