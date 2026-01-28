@@ -43,7 +43,7 @@ namespace DiGi.GIS.Analytical
 
             List<List<CityModel>?>? cityModelsList = [.. Enumerable.Repeat<List<CityModel>?>(null, paths_CityGML.Length)];
 
-            Parallel.For(0, paths_CityGML.Length, Core.Create.ParallelOptions() , i => 
+            Parallel.For(0, paths_CityGML.Length, Core.Create.ParallelOptions(), i =>
             {
                 cityModelsList[i] = CityGML.Create.CityModels(paths_CityGML[i]);
             });
@@ -57,7 +57,6 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
-
             List<BuildingModel> result = [];
 
             List<Building2D> building2Ds_Unidentified = [];
@@ -67,7 +66,7 @@ namespace DiGi.GIS.Analytical
                 BuildingModel? buildingModel = BuildingModel(building2D, cityModels, tolerance);
                 if (buildingModel == null)
                 {
-                    if(building2D?.PolygonalFace2D == null)
+                    if (building2D?.PolygonalFace2D == null)
                     {
                         continue;
                     }
@@ -88,14 +87,14 @@ namespace DiGi.GIS.Analytical
                 foreach (CityModel cityModel in cityModels)
                 {
                     IEnumerable<Building>? buildings = cityModel.Buildings;
-                    if(buildings == null || buildings.Count() == 0)
+                    if (buildings == null || buildings.Count() == 0)
                     {
                         continue;
                     }
 
                     foreach (Building? building in buildings)
                     {
-                        if(building?.Surfaces is not IEnumerable<ISurface> surfaces)
+                        if (building?.Surfaces is not IEnumerable<ISurface> surfaces)
                         {
                             continue;
                         }
@@ -132,7 +131,7 @@ namespace DiGi.GIS.Analytical
                         }
 
                         BoundingBox2D? boundingBox2D = Geometry.Planar.Create.BoundingBox2D(polygonalFace2Ds);
-                        if(boundingBox2D == null)
+                        if (boundingBox2D == null)
                         {
                             continue;
                         }
@@ -141,9 +140,9 @@ namespace DiGi.GIS.Analytical
                     }
                 }
 
-                if(tuples != null && tuples.Count != 0)
+                if (tuples != null && tuples.Count != 0)
                 {
-                    for(int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
+                    for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
                     {
                         Point2D? point2D = building2Ds_Unidentified[i]?.PolygonalFace2D?.GetInternalPoint();
                         if (point2D == null)
@@ -180,58 +179,58 @@ namespace DiGi.GIS.Analytical
                     {
                         IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
                         List<Point2D>? point2Ds = polygonalFace2D?.ExternalEdge?.GetPoints();
-                        if(point2Ds == null || point2Ds.Count == 0)
+                        if (point2Ds == null || point2Ds.Count == 0)
                         {
                             continue;
                         }
                         double elevation = 0;
                         double distance = 0;
-                        foreach(Point2D point2D in point2Ds)
+                        foreach (Point2D point2D in point2Ds)
                         {
                             double distance_Point2D = double.MaxValue;
                             Building? building = null;
-                            foreach(Tuple<BoundingBox2D, List<PolygonalFace2D>, Building> tuple in tuples)
+                            foreach (Tuple<BoundingBox2D, List<PolygonalFace2D>, Building> tuple in tuples)
                             {
                                 double distance_BoundingBox2D = tuple.Item1.Distance(point2D);
-                                if(distance_BoundingBox2D < distance_Point2D)
+                                if (distance_BoundingBox2D < distance_Point2D)
                                 {
                                     building = tuple.Item3;
                                     distance_Point2D = distance_BoundingBox2D;
                                 }
                             }
 
-                            if(building is null)
+                            if (building is null)
                             {
                                 continue;
                             }
 
                             Point3D? min = building.BoundingBox()?.Min;
-                            if(min is null)
+                            if (min is null)
                             {
                                 continue;
                             }
 
-                            Point3D point3D = new (point2D.X, point2D.Y, min.Z);
+                            Point3D point3D = new(point2D.X, point2D.Y, min.Z);
 
                             double elevation_Point3D = point3D.Z;
-                            if(double.IsNaN(elevation_Point3D))
+                            if (double.IsNaN(elevation_Point3D))
                             {
                                 continue;
                             }
 
                             Point3D? point3D_Closest = building.ClosestPoint(point3D, tolerance);
-                            if(point3D_Closest == null || double.IsNaN(point3D_Closest.Z))
+                            if (point3D_Closest == null || double.IsNaN(point3D_Closest.Z))
                             {
                                 continue;
                             }
 
                             distance_Point2D = point3D.Distance(point3D_Closest);
-                            if(double.IsNaN(distance_Point2D))
+                            if (double.IsNaN(distance_Point2D))
                             {
                                 continue;
                             }
 
-                            if(distance_Point2D == 0)
+                            if (distance_Point2D == 0)
                             {
                                 elevation = elevation_Point3D;
                                 distance = 0;
@@ -242,12 +241,12 @@ namespace DiGi.GIS.Analytical
                             distance += distance_Point2D;
                         }
 
-                        if(distance > 0)
+                        if (distance > 0)
                         {
                             elevation /= distance;
                         }
 
-                        if(Geometry.Spatial.Create.Plane(elevation) is Plane plane_Temp)
+                        if (Geometry.Spatial.Create.Plane(elevation) is Plane plane_Temp)
                         {
                             plane = plane_Temp;
                         }
@@ -255,7 +254,7 @@ namespace DiGi.GIS.Analytical
                         IPolygonalFace3D? polygonalFace3D = plane.Convert(polygonalFace2D);
 
                         Polyhedron? polyhedron = Geometry.Spatial.Create.Polyhedron(polygonalFace3D, plane.Normal * storeyHeight);
-                        if(polyhedron == null)
+                        if (polyhedron == null)
                         {
                             continue;
                         }
@@ -271,7 +270,6 @@ namespace DiGi.GIS.Analytical
                         building2Ds_Unidentified.RemoveAt(i);
                     }
                 }
-
             }
 
             return result;

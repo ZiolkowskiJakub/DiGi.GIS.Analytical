@@ -42,17 +42,17 @@ namespace DiGi.GIS.Analytical
 
             Polyhedron? polyhedron = building.Polyhedron();
 
-            BuildingModel result = new ();
+            BuildingModel result = new();
             LOD lOD = LOD.LOD2;
 
             List<IComponent> components = [];
             foreach (ISurface surface in surfaces)
             {
                 IComponent? component = surface.ToAnalytical();
-                if(component == null)
+                if (component == null)
                 {
                     component = Component(surface?.Geometry, polyhedron, tolerance);
-                    if(component == null)
+                    if (component == null)
                     {
                         continue;
                     }
@@ -60,15 +60,15 @@ namespace DiGi.GIS.Analytical
                     lOD = LOD.LOD1;
                 }
 
-                if(result.Update(component))
+                if (result.Update(component))
                 {
                     components.Add(component);
                 }
             }
 
-            Space space = new (polyhedron?.GetInternalPoint(), building?.UniqueId);
+            Space space = new(polyhedron?.GetInternalPoint(), building?.UniqueId);
             result.Update(space);
-            foreach(IComponent component in components)
+            foreach (IComponent component in components)
             {
                 result.Assign(component, space);
             }
@@ -86,7 +86,7 @@ namespace DiGi.GIS.Analytical
                 return null;
             }
 
-            BuildingModel result = new ();
+            BuildingModel result = new();
             List<IComponent> components = [];
             foreach (IPolygonalFace3D polygonalFace3D in polygonalFace3Ds)
             {
@@ -96,13 +96,13 @@ namespace DiGi.GIS.Analytical
                     continue;
                 }
 
-                if(result.Update(component))
+                if (result.Update(component))
                 {
                     components.Add(component);
                 }
             }
 
-            Space space = new (polyhedron?.GetInternalPoint(), "Building");
+            Space space = new(polyhedron?.GetInternalPoint(), "Building");
             result.Update(space);
             foreach (IComponent component in components)
             {
@@ -113,6 +113,5 @@ namespace DiGi.GIS.Analytical
 
             return result;
         }
-
     }
 }

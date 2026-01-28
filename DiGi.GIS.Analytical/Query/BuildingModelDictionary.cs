@@ -10,7 +10,7 @@ namespace DiGi.GIS.Analytical
     {
         public static Dictionary<string, BuildingModel>? BuildingModelDictionary(string? path, IEnumerable<string>? references)
         {
-            if(string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path) || references == null)
+            if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path) || references == null)
             {
                 return null;
             }
@@ -35,11 +35,11 @@ namespace DiGi.GIS.Analytical
             }
 
             List<BuildingModel>? buildingModels = null;
-            using (BuildingModelsFile buildingModelsFile = new (path))
+            using (BuildingModelsFile buildingModelsFile = new(path))
             {
                 buildingModelsFile.Open();
 
-                buildingModels =Core.Query.FilterNulls(buildingModelsFile.GetValues<BuildingModel>(uniqueReferences));
+                buildingModels = Core.Query.FilterNulls(buildingModelsFile.GetValues<BuildingModel>(uniqueReferences));
             }
 
             if (buildingModels == null)
@@ -75,7 +75,7 @@ namespace DiGi.GIS.Analytical
 
         public static Dictionary<string, BuildingModel>? BuildingModelDictionary(GISModelFile? gISModelFile, IEnumerable<string>? references)
         {
-            if(gISModelFile == null || references == null)
+            if (gISModelFile == null || references == null)
             {
                 return null;
             }

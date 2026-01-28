@@ -1,10 +1,10 @@
-﻿using DiGi.CityGML.Classes;
+﻿using DiGi.CityGML;
+using DiGi.CityGML.Classes;
 using DiGi.CityGML.Enums;
 using DiGi.Core;
 using DiGi.GIS.Classes;
-using DiGi.CityGML;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DiGi.GIS.Analytical
@@ -13,7 +13,7 @@ namespace DiGi.GIS.Analytical
     {
         public static Building? Building(this Building2D? building2D, IEnumerable<CityModel>? cityModels)
         {
-            if(cityModels is null)
+            if (cityModels is null)
             {
                 return null;
             }
@@ -40,7 +40,6 @@ namespace DiGi.GIS.Analytical
                     year = year_Temp;
                 }
 
-
                 Building? building = cityModel.Buildings.Find(x => x.Reference() == reference);
                 if (building == null)
                 {
@@ -58,10 +57,10 @@ namespace DiGi.GIS.Analytical
             List<Tuple<LOD?, int?, Building>> tuples_Temp;
 
             tuples_Temp = tuples.FindAll(x => x.Item1 == LOD.LOD2);
-            if(tuples_Temp != null && tuples_Temp.Count > 0)
+            if (tuples_Temp != null && tuples_Temp.Count > 0)
             {
                 List<Tuple<LOD?, int?, Building>> tuples_Temp_Year = tuples_Temp.FindAll(x => x.Item2 != null && x.Item2.HasValue);
-                if(tuples_Temp_Year == null || tuples_Temp_Year.Count == 0)
+                if (tuples_Temp_Year == null || tuples_Temp_Year.Count == 0)
                 {
                     return tuples_Temp[0].Item3;
                 }

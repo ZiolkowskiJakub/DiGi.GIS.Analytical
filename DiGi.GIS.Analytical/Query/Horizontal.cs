@@ -1,5 +1,4 @@
-﻿
-using DiGi.Geometry.Spatial.Classes;
+﻿using DiGi.Geometry.Spatial.Classes;
 
 namespace DiGi.GIS.Analytical
 {
@@ -12,7 +11,7 @@ namespace DiGi.GIS.Analytical
                 return false;
             }
 
-            if(vector3D?.Unit is not Vector3D unit)
+            if (vector3D?.Unit is not Vector3D unit)
             {
                 return false;
             }

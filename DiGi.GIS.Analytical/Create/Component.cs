@@ -16,7 +16,7 @@ namespace DiGi.GIS.Analytical
                 return null;
             }
 
-            if(Query.Horizontal(normal))
+            if (Query.Horizontal(normal))
             {
                 return new SurfaceWall(polygonalFace3D);
             }
@@ -24,7 +24,7 @@ namespace DiGi.GIS.Analytical
             if (polyhedron != null)
             {
                 Point3D? point3D = polygonalFace3D?.GetInternalPoint(tolerance);
-                if(point3D is not null)
+                if (point3D is not null)
                 {
                     IntersectionResult3D? intersectionResult3D = Geometry.Spatial.Create.IntersectionResult3D(polyhedron, new Line3D(point3D, Geometry.Spatial.Constans.Vector3D.WorldZ));
                     if (intersectionResult3D != null && intersectionResult3D.Intersect)
@@ -43,18 +43,16 @@ namespace DiGi.GIS.Analytical
                         {
                             return new FaceFloor(polygonalFace3D);
                         }
-
                     }
                 }
             }
 
-            if(Geometry.Spatial.Constans.Vector3D.WorldZ.GetInversed().Angle(normal) < Core.Constans.Tolerance.Angle)
+            if (Geometry.Spatial.Constans.Vector3D.WorldZ.GetInversed().Angle(normal) < Core.Constans.Tolerance.Angle)
             {
                 return new FaceFloor(polygonalFace3D);
             }
 
             return new SurfaceRoof(polygonalFace3D);
         }
-
     }
 }

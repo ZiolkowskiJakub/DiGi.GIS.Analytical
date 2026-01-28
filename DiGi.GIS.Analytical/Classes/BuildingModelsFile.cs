@@ -15,7 +15,7 @@ namespace DiGi.GIS.Classes
 
         public static UniqueReference? GetUniqueReference(string? reference)
         {
-            if(reference == null)
+            if (reference == null)
             {
                 return null;
             }
@@ -26,19 +26,16 @@ namespace DiGi.GIS.Classes
         public BuildingModelsFile(BuildingModelsFile? buildingModelsFile)
             : base(buildingModelsFile)
         {
-
         }
 
         public BuildingModelsFile(JsonObject? jsonObject)
-            :base(jsonObject)
+            : base(jsonObject)
         {
-
         }
 
         public BuildingModelsFile(string? path)
-            : base(path) 
+            : base(path)
         {
-            
         }
     }
 }

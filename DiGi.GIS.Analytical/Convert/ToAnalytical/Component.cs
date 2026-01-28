@@ -10,18 +10,18 @@ namespace DiGi.GIS.Analytical
     {
         public static IComponent? ToAnalytical(this ISurface? surface)
         {
-            if(surface == null)
+            if (surface == null)
             {
                 return null;
             }
 
             IPolygonalFace3D? polygonalFace3D = surface.Geometry;
-            if(polygonalFace3D == null)
+            if (polygonalFace3D == null)
             {
                 return null;
             }
 
-            if(surface is WallSurface)
+            if (surface is WallSurface)
             {
                 return new SurfaceWall(polygonalFace3D);
             }
