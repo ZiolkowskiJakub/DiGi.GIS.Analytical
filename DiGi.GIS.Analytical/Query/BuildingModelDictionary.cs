@@ -80,7 +80,7 @@ namespace DiGi.GIS.Analytical
                 return null;
             }
 
-            string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(gISModelFile.Path), System.IO.Path.GetFileNameWithoutExtension(gISModelFile.Path) + "." + Constans.FileExtension.BuildingModelsFile);
+            string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(gISModelFile.Path), System.IO.Path.GetFileNameWithoutExtension(gISModelFile.Path) + "." + Constants.FileExtension.BuildingModelsFile);
 
             return BuildingModelDictionary(path, references);
         }
