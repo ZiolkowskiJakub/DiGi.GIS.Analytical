@@ -6,7 +6,6 @@ using DiGi.CityGML.Interfaces;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
 using DiGi.GIS.Analytical.Enums;
-using DiGi.GIS.Classes;
 using System.Collections.Generic;
 using System.Linq;
 
