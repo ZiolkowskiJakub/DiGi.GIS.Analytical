@@ -2,6 +2,7 @@
 using DiGi.CityGML.Classes;
 using DiGi.CityGML.Enums;
 using DiGi.Core;
+using DiGi.GIS.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

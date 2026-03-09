@@ -1,6 +1,7 @@
 ﻿using DiGi.Analytical.Building.Classes;
 using DiGi.Core.Classes;
 using DiGi.GIS.Analytical.Enums;
+using DiGi.GIS.Interfaces;
 using System.Text.Json.Nodes;
 
 namespace DiGi.GIS.Classes
