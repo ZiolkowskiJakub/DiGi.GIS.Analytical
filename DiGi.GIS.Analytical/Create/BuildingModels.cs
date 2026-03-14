@@ -19,7 +19,7 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
-        public static List<BuildingModel>? BuildingModels(this GISModelFile? gISModelFile, string directory_CityGML, double tolerance = Core.Constants.Tolerance.Distance)
+        public static List<BuildingModel>? BuildingModels(this GISModelFile? gISModelFile, string directory_CityGML, double tolerance = Core.Constans.Tolerance.Distance)
         {
             string? path = gISModelFile?.Path;
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
@@ -81,7 +81,7 @@ namespace DiGi.GIS.Analytical
 
             if (building2Ds_Unidentified != null && building2Ds_Unidentified.Count != 0)
             {
-                Plane plane = Geometry.Spatial.Constants.Plane.WorldZ;
+                Plane plane = Geometry.Spatial.Constans.Plane.WorldZ;
 
                 List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples = [];
                 foreach (CityModel cityModel in cityModels)

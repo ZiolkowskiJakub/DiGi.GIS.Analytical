@@ -1,4 +1,4 @@
-﻿namespace DiGi.GIS.Analytical.Constants
+﻿namespace DiGi.GIS.Analytical.Constans
 {
     public static class FileTypeName
     {

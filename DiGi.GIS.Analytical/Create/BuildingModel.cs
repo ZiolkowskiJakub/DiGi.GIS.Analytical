@@ -14,7 +14,7 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
-        public static BuildingModel? BuildingModel(this Building2D? building2D, IEnumerable<CityModel>? cityModels, double tolerance = Core.Constants.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building2D? building2D, IEnumerable<CityModel>? cityModels, double tolerance = Core.Constans.Tolerance.Distance)
         {
             if (building2D == null)
             {
@@ -32,7 +32,7 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
-        public static BuildingModel? BuildingModel(this Building? building, double tolerance = Core.Constants.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building? building, double tolerance = Core.Constans.Tolerance.Distance)
         {
             IEnumerable<ISurface>? surfaces = building?.Surfaces;
             if (surfaces == null || surfaces.Count() == 0)
@@ -78,7 +78,7 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
-        public static BuildingModel? BuildingModel(this Polyhedron? polyhedron, double tolerance = Core.Constants.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Polyhedron? polyhedron, double tolerance = Core.Constans.Tolerance.Distance)
         {
             IEnumerable<IPolygonalFace3D>? polygonalFace3Ds = polyhedron?.PolygonalFaces;
             if (polygonalFace3Ds == null || polygonalFace3Ds.Count() == 0)
