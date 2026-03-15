@@ -1,4 +1,4 @@
-﻿namespace DiGi.GIS.Analytical.Constans
+﻿namespace DiGi.GIS.Analytical.Constants
 {
     public static class FileFilter
     {
