@@ -1,4 +1,4 @@
-﻿using DiGi.Analytical.Building.Classes;
+using DiGi.Analytical.Building.Classes;
 using DiGi.Core.Classes;
 using DiGi.GIS.Classes;
 using System.Collections.Generic;
@@ -8,6 +8,12 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Query
     {
+        /// <summary>
+        /// Retrieves a dictionary of building models from the specified file path based on the provided references.
+        /// </summary>
+        /// <param name="path">The file system path to the building models file.</param>
+        /// <param name="references">A collection of reference strings used to identify the building models to retrieve.</param>
+        /// <returns>A dictionary mapping unique identifiers to <see cref="BuildingModel"/> objects, or null if the path is invalid or references are null.</returns>
         public static Dictionary<string, BuildingModel>? BuildingModelDictionary(string? path, IEnumerable<string>? references)
         {
             if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path) || references == null)
@@ -73,6 +79,12 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
+        /// <summary>
+        /// Retrieves a dictionary of building models associated with the specified GIS model file based on the provided references.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file used to determine the location and name of the corresponding building models file.</param>
+        /// <param name="references">A collection of reference strings used to identify the building models to retrieve.</param>
+        /// <returns>A dictionary mapping unique identifiers to <see cref="BuildingModel"/> objects, or null if the GIS model file or references are null.</returns>
         public static Dictionary<string, BuildingModel>? BuildingModelDictionary(GISModelFile? gISModelFile, IEnumerable<string>? references)
         {
             if (gISModelFile == null || references == null)

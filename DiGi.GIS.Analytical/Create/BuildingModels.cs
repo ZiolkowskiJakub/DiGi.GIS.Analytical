@@ -1,4 +1,4 @@
-﻿using DiGi.Analytical.Building.Classes;
+using DiGi.Analytical.Building.Classes;
 using DiGi.CityGML;
 using DiGi.CityGML.Classes;
 using DiGi.CityGML.Interfaces;
@@ -19,6 +19,13 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Creates a list of building models by correlating 2D building data from a GIS model file with corresponding 3D CityGML data found in the specified directory.
+        /// </summary>
+        /// <param name="gISModelFile">The source GIS model file containing the building data.</param>
+        /// <param name="directory_CityGML">The directory path where the CityGML zip files are stored.</param>
+        /// <param name="tolerance">The distance tolerance used for geometric projections and matching operations.</param>
+        /// <returns>A list of <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> objects if successful; otherwise, null if the input file is invalid or no buildings are found.</returns>
         public static List<BuildingModel>? BuildingModels(this GISModelFile? gISModelFile, string directory_CityGML, double tolerance = Core.Constants.Tolerance.Distance)
         {
             string? path = gISModelFile?.Path;

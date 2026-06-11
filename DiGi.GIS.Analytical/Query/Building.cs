@@ -1,4 +1,4 @@
-﻿using DiGi.CityGML;
+using DiGi.CityGML;
 using DiGi.CityGML.Classes;
 using DiGi.CityGML.Enums;
 using DiGi.Core;
@@ -11,6 +11,13 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Query
     {
+        /// <summary>
+        /// Retrieves the most appropriate <see cref="Building"/> from a collection of city models based on a 2D building reference.
+        /// The method prioritizes buildings with LOD2 over LOD1, and among those with the same LOD, it selects the one from the most recent year.
+        /// </summary>
+        /// <param name="building2D">The 2D building instance providing the reference for the search.</param>
+        /// <param name="cityModels">The collection of city models to be searched for a matching building.</param>
+        /// <returns>The matching <see cref="Building"/> based on priority rules, or <see langword="null"/> if no match is found or inputs are null.</returns>
         public static Building? Building(this Building2D? building2D, IEnumerable<CityModel>? cityModels)
         {
             if (cityModels is null)

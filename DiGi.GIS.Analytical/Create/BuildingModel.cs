@@ -1,4 +1,4 @@
-﻿using DiGi.Analytical.Building.Classes;
+using DiGi.Analytical.Building.Classes;
 using DiGi.Analytical.Building.Interfaces;
 using DiGi.CityGML;
 using DiGi.CityGML.Classes;
@@ -14,6 +14,13 @@ namespace DiGi.GIS.Analytical
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> based on a 2D building and a collection of city models.
+        /// </summary>
+        /// <param name="building2D">The 2D building representation.</param>
+        /// <param name="cityModels">A collection of city models used to find the corresponding 3D building.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
         public static BuildingModel? BuildingModel(this Building2D? building2D, IEnumerable<CityModel>? cityModels, double tolerance = Core.Constants.Tolerance.Distance)
         {
             if (building2D == null)
@@ -32,6 +39,12 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
+        /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 3D building object.
+        /// </summary>
+        /// <param name="building">The 3D building object.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
         public static BuildingModel? BuildingModel(this Building? building, double tolerance = Core.Constants.Tolerance.Distance)
         {
             IEnumerable<ISurface>? surfaces = building?.Surfaces;
@@ -78,6 +91,12 @@ namespace DiGi.GIS.Analytical
             return result;
         }
 
+        /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a polyhedron representation.
+        /// </summary>
+        /// <param name="polyhedron">The polyhedron representing the building geometry.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
         public static BuildingModel? BuildingModel(this Polyhedron? polyhedron, double tolerance = Core.Constants.Tolerance.Distance)
         {
             IEnumerable<IPolygonalFace3D>? polygonalFace3Ds = polyhedron?.PolygonalFaces;

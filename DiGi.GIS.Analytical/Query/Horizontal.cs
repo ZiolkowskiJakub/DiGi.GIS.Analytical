@@ -1,9 +1,15 @@
-﻿using DiGi.Geometry.Spatial.Classes;
+using DiGi.Geometry.Spatial.Classes;
 
 namespace DiGi.GIS.Analytical
 {
     public static partial class Query
     {
+        /// <summary>
+        /// Determines whether the specified 3D vector is horizontal (perpendicular to the World Z axis) within a given tolerance.
+        /// </summary>
+        /// <param name="vector3D">The 3D vector to evaluate.</param>
+        /// <param name="tolerance">The angular tolerance used to determine if the vector is horizontal.</param>
+        /// <returns><c>true</c> if the vector is horizontal within the specified tolerance; otherwise, <c>false</c>.</returns>
         public static bool Horizontal(this Vector3D? vector3D, double tolerance = Core.Constants.Tolerance.Angle)
         {
             if (vector3D == null)
