@@ -184,7 +184,7 @@ namespace DiGi.GIS.Analytical
 
                     for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
                     {
-                        IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
+                           IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
                         List<Point2D>? point2Ds = polygonalFace2D?.ExternalEdge?.GetPoints();
                         if (point2Ds == null || point2Ds.Count == 0)
                         {

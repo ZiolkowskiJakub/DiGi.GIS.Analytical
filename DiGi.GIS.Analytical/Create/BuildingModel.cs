@@ -3,6 +3,9 @@ using DiGi.Analytical.Building.Interfaces;
 using DiGi.CityGML;
 using DiGi.CityGML.Classes;
 using DiGi.CityGML.Interfaces;
+using DiGi.Geometry.Planar.Classes;
+using DiGi.Geometry.Planar.Interfaces;
+using DiGi.Geometry.Spatial;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
 using DiGi.GIS.Analytical.Enums;
@@ -129,6 +132,112 @@ namespace DiGi.GIS.Analytical
             }
 
             result.SetValue(BuildingModelParameter.LOD, LOD.Undefined, new Core.Parameter.Classes.SetValueSettings() { TryConvert = true, CheckAccessType = false });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 2D building representation by extruding it storey by storey.
+        /// </summary>
+        /// <param name="building2D">The 2D building representation.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> instance if successful; otherwise, null.</returns>
+        public static BuildingModel? BuildingModel(this Building2D? building2D, double tolerance = Core.Constants.Tolerance.Distance)
+        {
+            if (building2D is null)
+            {
+                return null;
+            }
+
+            PolygonalFace2D? polygonalFace2D = building2D.PolygonalFace2D;
+            if (polygonalFace2D is null)
+            {
+                return null;
+            }
+
+            ushort storeys = building2D.Storeys;
+            if (storeys == 0)
+            {
+                storeys = 1;
+            }
+
+            double storeyHeight = 3.0;
+
+            BuildingModel result = new();
+            Space? space_Last = null;
+
+            for (int i = 0; i < storeys; i++)
+            {
+                double min = i * storeyHeight;
+                double max = (i + 1) * storeyHeight;
+
+                Plane plane_Min = Geometry.Spatial.Create.Plane(min)!;
+
+                PolygonalFace3D? polygonalFace3D = plane_Min.Convert(polygonalFace2D);
+                if (polygonalFace3D is null)
+                {
+                    continue;
+                }
+
+                Point3D? internalPoint = polygonalFace3D.GetInternalPoint();
+                if (internalPoint is null)
+                {
+                    continue;
+                }
+
+                internalPoint.Move(new Vector3D(0, 0, (min + max) / 2));
+
+                Space space = new(internalPoint, $"Storey {i + 1}");
+                space_Last = space;
+
+                result.Update(space);
+
+                FaceFloor? faceFloor = DiGi.Analytical.Building.Create.FaceFloor(polygonalFace3D, tolerance);
+                if (faceFloor is not null)
+                {
+                    result.Update(faceFloor);
+                    result.Assign(faceFloor, space);
+                }
+
+                if (polygonalFace2D.Edges is List<IPolygonal2D> edges)
+                {
+                    foreach (IPolygonal2D edge in edges)
+                    {
+                        if (edge?.GetSegments() is List<Segment2D> segment2Ds)
+                        {
+                            foreach (Segment2D segment2D in segment2Ds)
+                            {
+                                if (plane_Min.Convert(segment2D) is not Segment3D segment3D)
+                                {
+                                    continue;
+                                }
+
+                                CurveWall? curveWall = DiGi.Analytical.Building.Create.CurveWall(segment3D, storeyHeight, tolerance);
+                                if (curveWall is not null)
+                                {
+                                    result.Update(curveWall);
+                                    result.Assign(curveWall, space);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (space_Last is not null)
+            {
+                Plane plane_Max = Geometry.Spatial.Create.Plane(storeys * storeyHeight)!;
+                PolygonalFace3D? polygonalFace3D_Roof = plane_Max.Convert(polygonalFace2D);
+                if (polygonalFace3D_Roof is not null)
+                {
+                    SurfaceRoof? surfaceRoof = DiGi.Analytical.Building.Create.SurfaceRoof(polygonalFace3D_Roof, tolerance);
+                    if (surfaceRoof is not null)
+                    {
+                        result.Update(surfaceRoof);
+                        result.Assign(surfaceRoof, space_Last);
+                    }
+                }
+            }
 
             return result;
         }
