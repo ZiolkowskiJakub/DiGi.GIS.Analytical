@@ -140,9 +140,10 @@ namespace DiGi.GIS.Analytical
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 2D building representation by extruding it storey by storey.
         /// </summary>
         /// <param name="building2D">The 2D building representation.</param>
+        /// <param name="storeyHeight">The height of a single storey in meters used for the extrusion.</param>
         /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> instance if successful; otherwise, null.</returns>
-        public static BuildingModel? BuildingModel(this Building2D? building2D, double tolerance = Core.Constants.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building2D? building2D, double storeyHeight = 3.0, double tolerance = Core.Constants.Tolerance.Distance)
         {
             if (building2D is null)
             {
@@ -160,8 +161,6 @@ namespace DiGi.GIS.Analytical
             {
                 storeys = 1;
             }
-
-            double storeyHeight = 3.0;
 
             BuildingModel result = new();
             Space? space_Last = null;

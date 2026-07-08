@@ -100,24 +100,30 @@ The distance tolerance for geometric calculations\.
 [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')  
 A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') if successful; otherwise, null\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double)'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double)'></a>
 
-## Create\.BuildingModel\(this Building2D, double\) Method
+## Create\.BuildingModel\(this Building2D, double, double\) Method
 
 Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 2D building representation by extruding it storey by storey\.
 
 ```csharp
-public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.GIS.Classes.Building2D? building2D, double tolerance=1E-06);
+public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.GIS.Classes.Building2D? building2D, double storeyHeight=3.0, double tolerance=1E-06);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double).building2D'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double).building2D'></a>
 
 `building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
 
 The 2D building representation\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double).tolerance'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double).storeyHeight'></a>
+
+`storeyHeight` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The height of a single storey in meters used for the extrusion\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double).tolerance'></a>
 
 `tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
 
