@@ -1,4 +1,4 @@
-#### [DiGi\.GIS\.Analytical](index.md 'index')
+#### [DiGi\.GIS\.Analytical](DiGi.GIS.Analytical.Overview.md 'DiGi\.GIS\.Analytical\.Overview')
 
 ## DiGi\.GIS\.Analytical\.Constants Namespace
 ### Classes
