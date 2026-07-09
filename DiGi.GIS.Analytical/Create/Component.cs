@@ -34,7 +34,7 @@ namespace DiGi.GIS.Analytical
                 if (point3D is not null)
                 {
                     IntersectionResult3D? intersectionResult3D = Geometry.Spatial.Create.IntersectionResult3D(polyhedron, new Line3D(point3D, Geometry.Spatial.Constants.Vector3D.WorldZ));
-                    if (intersectionResult3D != null && intersectionResult3D.Intersect)
+                    if (intersectionResult3D != null && intersectionResult3D.Any())
                     {
                         List<Point3D>? point3Ds = intersectionResult3D.GetGeometry3Ds<Point3D>();
                         if (point3Ds != null && point3Ds.Count != 0)
