@@ -187,16 +187,24 @@ namespace DiGi.GIS.Analytical
                 internalPoint.Move(new Vector3D(0, 0, (min + max) / 2));
 
                 Space space = new(internalPoint, $"Storey {i + 1}");
-                space_Last = space;
-
                 result.Update(space);
 
                 FaceFloor? faceFloor = DiGi.Analytical.Building.Create.FaceFloor(polygonalFace3D, tolerance);
                 if (faceFloor is not null)
                 {
                     result.Update(faceFloor);
-                    result.Assign(faceFloor, space);
+
+                    if(space_Last is not null)
+                    {
+                        result.Assign(faceFloor, space, space_Last);
+                    }
+                    else
+                    {
+                        result.Assign(faceFloor, space);
+                    }
                 }
+
+                space_Last = space;
 
                 if (polygonalFace2D.Edges is List<IPolygonal2D> edges)
                 {
