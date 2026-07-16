@@ -64,6 +64,28 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
+            return BuildingModels(building2Ds, cityModels, tolerance);
+        }
+
+        /// <summary>
+        /// Creates a list of building models from a collection of 2D buildings and city models, with fallback logic for buildings that cannot be directly matched.
+        /// </summary>
+        /// <param name="building2Ds">The 2D building data to convert.</param>
+        /// <param name="cityModels">The city models used to find corresponding 3D buildings.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A list of <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> objects if successful; otherwise, null.</returns>
+        public static List<BuildingModel>? BuildingModels(this IEnumerable<Building2D>? building2Ds, IEnumerable<CityModel> cityModels, double tolerance = Core.Constants.Tolerance.Distance)
+        {
+            if(building2Ds is null || cityModels is null)
+            {
+                return null;
+            }
+
+            if(building2Ds.Any())
+            {
+                return [];
+            }
+        
             List<BuildingModel> result = [];
 
             List<Building2D> building2Ds_Unidentified = [];
@@ -184,7 +206,7 @@ namespace DiGi.GIS.Analytical
 
                     for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
                     {
-                           IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
+                        IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
                         List<Point2D>? point2Ds = polygonalFace2D?.ExternalEdge?.GetPoints();
                         if (point2Ds == null || point2Ds.Count == 0)
                         {

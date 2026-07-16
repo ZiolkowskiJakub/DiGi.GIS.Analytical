@@ -7,7 +7,7 @@ using System.Text.Json.Nodes;
 namespace DiGi.GIS.Classes
 {
     /// <summary>
-    /// Represents a storage file for building models, providing functionality to manage and retrieve 
+    /// Represents a storage file for building models, providing functionality to manage and retrieve
     /// unique references associated with building model data.
     /// </summary>
     public class BuildingModelsFile : Core.IO.File.Classes.StorageFile<BuildingModel>, IGISObject

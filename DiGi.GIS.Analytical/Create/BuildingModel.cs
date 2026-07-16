@@ -3,8 +3,6 @@ using DiGi.Analytical.Building.Interfaces;
 using DiGi.CityGML;
 using DiGi.CityGML.Classes;
 using DiGi.CityGML.Interfaces;
-using DiGi.Geometry.Planar.Classes;
-using DiGi.Geometry.Planar.Interfaces;
 using DiGi.Geometry.Spatial;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
@@ -145,18 +143,30 @@ namespace DiGi.GIS.Analytical
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> instance if successful; otherwise, null.</returns>
         public static BuildingModel? BuildingModel(this Building2D? building2D, double storeyHeight = 3.0, double tolerance = Core.Constants.Tolerance.Distance)
         {
-            if (building2D is null)
+            PolygonalFace3D? polygonalFace3D = Geometry.Spatial.Constants.Plane.WorldZ.Convert(building2D?.PolygonalFace2D);
+            if (polygonalFace3D is null)
             {
                 return null;
             }
 
-            PolygonalFace2D? polygonalFace2D = building2D.PolygonalFace2D;
-            if (polygonalFace2D is null)
+            return BuildingModel(polygonalFace3D, building2D!.Storeys, storeyHeight, tolerance);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> by extruding a polygonal face into the specified number of storeys.
+        /// </summary>
+        /// <param name="polygonalFace3D">The base polygonal face to extrude.</param>
+        /// <param name="storeys">The number of storeys to generate.</param>
+        /// <param name="storeyHeight">The height of each storey in meters.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
+        public static BuildingModel? BuildingModel(this IPolygonalFace3D? polygonalFace3D, ushort storeys, double storeyHeight = 3.0, double tolerance = Core.Constants.Tolerance.Distance)
+        {
+            if (polygonalFace3D?.GetBoundingBox()?.Min?.Z is not double minElevation)
             {
                 return null;
             }
 
-            ushort storeys = building2D.Storeys;
             if (storeys == 0)
             {
                 storeys = 1;
@@ -167,18 +177,18 @@ namespace DiGi.GIS.Analytical
 
             for (int i = 0; i < storeys; i++)
             {
-                double min = i * storeyHeight;
-                double max = (i + 1) * storeyHeight;
+                double min = minElevation + i * storeyHeight;
+                double max = minElevation + ((i + 1) * storeyHeight);
 
                 Plane plane_Min = Geometry.Spatial.Create.Plane(min)!;
 
-                PolygonalFace3D? polygonalFace3D = plane_Min.Convert(polygonalFace2D);
-                if (polygonalFace3D is null)
+                IPolygonalFace3D? polygonalFace3D_Project = plane_Min.Project<IPolygonalFace3D>(polygonalFace3D);
+                if (polygonalFace3D_Project is null)
                 {
                     continue;
                 }
 
-                Point3D? internalPoint = polygonalFace3D.GetInternalPoint();
+                Point3D? internalPoint = polygonalFace3D_Project.GetInternalPoint();
                 if (internalPoint is null)
                 {
                     continue;
@@ -189,12 +199,12 @@ namespace DiGi.GIS.Analytical
                 Space space = new(internalPoint, $"Storey {i + 1}");
                 result.Update(space);
 
-                FaceFloor? faceFloor = DiGi.Analytical.Building.Create.FaceFloor(polygonalFace3D, tolerance);
+                FaceFloor? faceFloor = DiGi.Analytical.Building.Create.FaceFloor(polygonalFace3D_Project, tolerance);
                 if (faceFloor is not null)
                 {
                     result.Update(faceFloor);
 
-                    if(space_Last is not null)
+                    if (space_Last is not null)
                     {
                         result.Assign(faceFloor, space, space_Last);
                     }
@@ -206,19 +216,14 @@ namespace DiGi.GIS.Analytical
 
                 space_Last = space;
 
-                if (polygonalFace2D.Edges is List<IPolygonal2D> edges)
+                if (polygonalFace3D_Project.Edges is List<IPolygonal3D> edges)
                 {
-                    foreach (IPolygonal2D edge in edges)
+                    foreach (IPolygonal3D edge in edges)
                     {
-                        if (edge?.GetSegments() is List<Segment2D> segment2Ds)
+                        if (edge?.GetSegments() is List<Segment3D> segment3Ds)
                         {
-                            foreach (Segment2D segment2D in segment2Ds)
+                            foreach (Segment3D segment3D in segment3Ds)
                             {
-                                if (plane_Min.Convert(segment2D) is not Segment3D segment3D)
-                                {
-                                    continue;
-                                }
-
                                 CurveWall? curveWall = DiGi.Analytical.Building.Create.CurveWall(segment3D, storeyHeight, tolerance);
                                 if (curveWall is not null)
                                 {
@@ -234,7 +239,8 @@ namespace DiGi.GIS.Analytical
             if (space_Last is not null)
             {
                 Plane plane_Max = Geometry.Spatial.Create.Plane(storeys * storeyHeight)!;
-                PolygonalFace3D? polygonalFace3D_Roof = plane_Max.Convert(polygonalFace2D);
+
+                IPolygonalFace3D? polygonalFace3D_Roof = plane_Max.Project<IPolygonalFace3D>(polygonalFace3D);
                 if (polygonalFace3D_Roof is not null)
                 {
                     SurfaceRoof? surfaceRoof = DiGi.Analytical.Building.Create.SurfaceRoof(polygonalFace3D_Roof, tolerance);

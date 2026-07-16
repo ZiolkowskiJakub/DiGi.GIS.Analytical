@@ -100,6 +100,45 @@ The distance tolerance for geometric calculations\.
 [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')  
 A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') if successful; otherwise, null\.
 
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,ushort,double,double)'></a>
+
+## Create\.BuildingModel\(this IPolygonalFace3D, ushort, double, double\) Method
+
+Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') by extruding a polygonal face into the specified number of storeys\.
+
+```csharp
+public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D? polygonalFace3D, ushort storeys, double storeyHeight=3.0, double tolerance=1E-06);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,ushort,double,double).polygonalFace3D'></a>
+
+`polygonalFace3D` [DiGi\.Geometry\.Spatial\.Interfaces\.IPolygonalFace3D](https://learn.microsoft.com/en-us/dotnet/api/digi.geometry.spatial.interfaces.ipolygonalface3d 'DiGi\.Geometry\.Spatial\.Interfaces\.IPolygonalFace3D')
+
+The base polygonal face to extrude\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,ushort,double,double).storeys'></a>
+
+`storeys` [System\.UInt16](https://learn.microsoft.com/en-us/dotnet/api/system.uint16 'System\.UInt16')
+
+The number of storeys to generate\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,ushort,double,double).storeyHeight'></a>
+
+`storeyHeight` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The height of each storey in meters\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,ushort,double,double).tolerance'></a>
+
+`tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The distance tolerance for geometric calculations\.
+
+#### Returns
+[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')  
+A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') if successful; otherwise, null\.
+
 <a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double)'></a>
 
 ## Create\.BuildingModel\(this Building2D, double, double\) Method
@@ -198,6 +237,39 @@ The distance tolerance used for geometric projections and matching operations\.
 #### Returns
 [System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')  
 A list of [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') objects if successful; otherwise, null if the input file is invalid or no buildings are found\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModels(thisSystem.Collections.Generic.IEnumerable_DiGi.GIS.Classes.Building2D_,System.Collections.Generic.IEnumerable_DiGi.CityGML.Classes.CityModel_,double)'></a>
+
+## Create\.BuildingModels\(this IEnumerable\<Building2D\>, IEnumerable\<CityModel\>, double\) Method
+
+Creates a list of building models from a collection of 2D buildings and city models, with fallback logic for buildings that cannot be directly matched\.
+
+```csharp
+public static System.Collections.Generic.List<DiGi.Analytical.Building.Classes.BuildingModel>? BuildingModels(this System.Collections.Generic.IEnumerable<DiGi.GIS.Classes.Building2D>? building2Ds, System.Collections.Generic.IEnumerable<DiGi.CityGML.Classes.CityModel> cityModels, double tolerance=1E-06);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModels(thisSystem.Collections.Generic.IEnumerable_DiGi.GIS.Classes.Building2D_,System.Collections.Generic.IEnumerable_DiGi.CityGML.Classes.CityModel_,double).building2Ds'></a>
+
+`building2Ds` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The 2D building data to convert\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModels(thisSystem.Collections.Generic.IEnumerable_DiGi.GIS.Classes.Building2D_,System.Collections.Generic.IEnumerable_DiGi.CityGML.Classes.CityModel_,double).cityModels'></a>
+
+`cityModels` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[DiGi\.CityGML\.Classes\.CityModel](https://learn.microsoft.com/en-us/dotnet/api/digi.citygml.classes.citymodel 'DiGi\.CityGML\.Classes\.CityModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+The city models used to find corresponding 3D buildings\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModels(thisSystem.Collections.Generic.IEnumerable_DiGi.GIS.Classes.Building2D_,System.Collections.Generic.IEnumerable_DiGi.CityGML.Classes.CityModel_,double).tolerance'></a>
+
+`tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The distance tolerance for geometric calculations\.
+
+#### Returns
+[System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')  
+A list of [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') objects if successful; otherwise, null\.
 
 <a name='DiGi.GIS.Analytical.Create.Component(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,DiGi.Geometry.Spatial.Classes.Polyhedron,double)'></a>
 
