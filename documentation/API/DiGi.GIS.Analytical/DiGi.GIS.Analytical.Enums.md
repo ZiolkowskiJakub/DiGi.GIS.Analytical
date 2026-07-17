@@ -26,6 +26,12 @@ Gets the Level Of Detail \(LOD\) of the building model\.
 
 Gets the reference identifier associated with the building model\.
 
+<a name='DiGi.GIS.Analytical.Enums.BuildingModelParameter.CountyId'></a>
+
+`CountyId` 2
+
+Gets the county identifier associated with the building model\.
+
 <a name='DiGi.GIS.Analytical.Enums.LOD'></a>
 
 ## LOD Enum

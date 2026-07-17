@@ -19,5 +19,10 @@ namespace DiGi.GIS.Analytical.Enums
         /// Gets the reference identifier associated with the building model.
         /// </summary>
         [ParameterProperties("59029eab-aa99-4caa-9ae6-10613421ef1d", "Reference", "Reference", Core.Parameter.Enums.AccessType.Read), StringParameterValue(false)] Reference,
+
+        /// <summary>
+        /// Gets the county identifier associated with the building model.
+        /// </summary>
+        [ParameterProperties("f9562409-14c0-45eb-b182-80b70f220209", "CountyId", "County id", Core.Parameter.Enums.AccessType.Read), IntegerParameterValue(false)] CountyId,
     }
 }
