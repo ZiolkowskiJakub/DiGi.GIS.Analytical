@@ -145,6 +145,8 @@ A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.c
 
 Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 2D building representation by extruding it storey by storey\.
 
+The building reference ([DiGi\.GIS\.Classes\.GISGuidObject2D\.Reference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.gisguidobject2d.reference 'DiGi\.GIS\.Classes\.GISGuidObject2D\.Reference')) is carried over to [Reference](DiGi.GIS.Analytical.Enums.md#DiGi.GIS.Analytical.Enums.BuildingModelParameter.Reference 'DiGi\.GIS\.Analytical\.Enums\.BuildingModelParameter\.Reference').
+
 ```csharp
 public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.GIS.Classes.Building2D? building2D, double storeyHeight=3.0, double tolerance=1E-06);
 ```

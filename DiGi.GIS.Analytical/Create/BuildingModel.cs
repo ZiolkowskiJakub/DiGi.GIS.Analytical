@@ -136,6 +136,7 @@ namespace DiGi.GIS.Analytical
 
         /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 2D building representation by extruding it storey by storey.
+        /// <para>The building reference (<see cref="GISGuidObject2D.Reference"/>) is carried over to <see cref="BuildingModelParameter.Reference"/>.</para>
         /// </summary>
         /// <param name="building2D">The 2D building representation.</param>
         /// <param name="storeyHeight">The height of a single storey in meters used for the extrusion.</param>
@@ -149,7 +150,14 @@ namespace DiGi.GIS.Analytical
                 return null;
             }
 
-            return BuildingModel(polygonalFace3D, building2D!.Storeys, storeyHeight, tolerance);
+            BuildingModel? result = BuildingModel(polygonalFace3D, building2D!.Storeys, storeyHeight, tolerance);
+
+            if (result is not null && !string.IsNullOrWhiteSpace(building2D.Reference))
+            {
+                result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+            }
+
+            return result;
         }
 
         /// <summary>
