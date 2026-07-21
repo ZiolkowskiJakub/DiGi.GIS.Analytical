@@ -85,7 +85,7 @@ namespace DiGi.GIS.Analytical
             {
                 return [];
             }
-        
+
             List<BuildingModel> result = [];
 
             List<Building2D> building2Ds_Unidentified = [];
@@ -108,197 +108,300 @@ namespace DiGi.GIS.Analytical
                 result.Add(buildingModel);
             }
 
-            if (building2Ds_Unidentified != null && building2Ds_Unidentified.Count != 0)
+            List<Building> buildings = [];
+            foreach (CityModel cityModel in cityModels)
             {
-                Plane plane = Geometry.Spatial.Constants.Plane.WorldZ;
-
-                List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples = [];
-                foreach (CityModel cityModel in cityModels)
+                IEnumerable<Building>? buildings_CityModel = cityModel?.Buildings;
+                if (buildings_CityModel == null)
                 {
-                    IEnumerable<Building>? buildings = cityModel.Buildings;
-                    if (buildings == null || buildings.Count() == 0)
+                    continue;
+                }
+
+                buildings.AddRange(buildings_CityModel);
+            }
+
+            List<BuildingModel>? buildingModels_Unidentified = BuildingModels_Unidentified(building2Ds_Unidentified, buildings, tolerance);
+            if (buildingModels_Unidentified != null && buildingModels_Unidentified.Count != 0)
+            {
+                result.AddRange(buildingModels_Unidentified);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a list of building models from a collection of 2D buildings and CityGML buildings, matching them by reference, with fallback logic for buildings that cannot be directly matched.
+        /// <para>Unlike the city model overload the match is a straight reference join of the 2D building reference against the CityGML building reference, so the caller is expected to have resolved any level of detail or year ranking beforehand.</para>
+        /// </summary>
+        /// <param name="building2Ds">The 2D building data to convert.</param>
+        /// <param name="buildings">The CityGML buildings used to find corresponding 3D geometry.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A list of <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> objects if successful; otherwise, null.</returns>
+        public static List<BuildingModel>? BuildingModels(this IEnumerable<Building2D>? building2Ds, IEnumerable<Building>? buildings, double tolerance = Core.Constants.Tolerance.Distance)
+        {
+            if (building2Ds is null || buildings is null)
+            {
+                return null;
+            }
+
+            if (!building2Ds.Any())
+            {
+                return [];
+            }
+
+            Dictionary<string, Building> dictionary = [];
+            foreach (Building building in buildings)
+            {
+                // netstandard2.0 does not carry the NotNullWhen annotation on string.IsNullOrWhiteSpace, so the pattern does the narrowing.
+                if (building?.Reference() is not string reference || reference.Trim().Length == 0)
+                {
+                    continue;
+                }
+
+                dictionary[reference] = building;
+            }
+
+            List<BuildingModel> result = [];
+
+            List<Building2D> building2Ds_Unidentified = [];
+
+            foreach (Building2D building2D in building2Ds)
+            {
+                BuildingModel? buildingModel = null;
+
+                if (building2D?.Reference is string reference && reference.Trim().Length != 0 && dictionary.TryGetValue(reference, out Building? building))
+                {
+                    buildingModel = BuildingModel(building, tolerance);
+                }
+
+                if (buildingModel == null)
+                {
+                    if (building2D?.PolygonalFace2D == null)
                     {
                         continue;
                     }
 
-                    foreach (Building? building in buildings)
-                    {
-                        if (building?.Surfaces is not IEnumerable<ISurface> surfaces)
-                        {
-                            continue;
-                        }
-
-                        List<PolygonalFace2D>? polygonalFace2Ds = [];
-                        foreach (ISurface surface in surfaces)
-                        {
-                            PolygonalFace3D? polygonalFace3D = Geometry.Spatial.Query.Project<PolygonalFace3D>(plane, surface.Geometry, tolerance);
-                            if (polygonalFace3D == null)
-                            {
-                                continue;
-                            }
-
-                            PolygonalFace2D? polygonalFace2D = plane.Convert(polygonalFace3D);
-                            if (polygonalFace2D == null)
-                            {
-                                continue;
-                            }
-
-                            double area = polygonalFace2D.GetArea();
-                            if (area < tolerance)
-                            {
-                                continue;
-                            }
-
-                            polygonalFace2Ds.Add(polygonalFace2D);
-                        }
-
-                        polygonalFace2Ds = Geometry.Planar.Query.Union(polygonalFace2Ds);
-
-                        if (polygonalFace2Ds == null || polygonalFace2Ds.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        BoundingBox2D? boundingBox2D = Geometry.Planar.Create.BoundingBox2D(polygonalFace2Ds);
-                        if (boundingBox2D == null)
-                        {
-                            continue;
-                        }
-
-                        tuples.Add(new Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>(boundingBox2D, polygonalFace2Ds, building));
-                    }
+                    building2Ds_Unidentified.Add(building2D);
+                    continue;
                 }
 
-                if (tuples != null && tuples.Count != 0)
+                buildingModel.SetValue(BuildingModelParameter.Reference, building2D!.Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+                result.Add(buildingModel);
+            }
+
+            List<BuildingModel>? buildingModels_Unidentified = BuildingModels_Unidentified(building2Ds_Unidentified, buildings, tolerance);
+            if (buildingModels_Unidentified != null && buildingModels_Unidentified.Count != 0)
+            {
+                result.AddRange(buildingModels_Unidentified);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates building models for 2D buildings that could not be matched to a CityGML building directly.
+        /// <para>Each 2D building is first matched spatially - its internal point is tested against the CityGML buildings projected onto the world XY plane - and the remainder are extruded from their footprint at an assumed storey height, with the base elevation interpolated from the nearest CityGML geometry.</para>
+        /// </summary>
+        /// <param name="building2Ds">The unmatched 2D building data to convert.</param>
+        /// <param name="buildings">The CityGML buildings used for the spatial match and for the base elevation of the extruded models.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A list of <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> objects for the 2D buildings that could be resolved; otherwise, null.</returns>
+        public static List<BuildingModel>? BuildingModels_Unidentified(this IEnumerable<Building2D>? building2Ds, IEnumerable<Building>? buildings, double tolerance = Core.Constants.Tolerance.Distance)
+        {
+            if (building2Ds is null || buildings is null)
+            {
+                return null;
+            }
+
+            List<Building2D> building2Ds_Unidentified = [.. building2Ds];
+            if (building2Ds_Unidentified.Count == 0)
+            {
+                return [];
+            }
+
+            List<BuildingModel> result = [];
+
+            Plane plane = Geometry.Spatial.Constants.Plane.WorldZ;
+
+            List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples = [];
+            foreach (Building? building in buildings)
+            {
+                if (building?.Surfaces is not IEnumerable<ISurface> surfaces)
                 {
-                    for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
-                    {
-                        Point2D? point2D = building2Ds_Unidentified[i]?.PolygonalFace2D?.GetInternalPoint();
-                        if (point2D == null)
-                        {
-                            continue;
-                        }
-
-                        List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples_Temp = tuples.FindAll(x => x.Item1.InRange(point2D, tolerance));
-                        if (tuples_Temp == null || tuples_Temp.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        tuples_Temp = tuples_Temp.FindAll(x => x.Item2.Find(x => x.InRange(point2D, tolerance)) != null);
-                        if (tuples_Temp == null || tuples_Temp.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        BuildingModel? buildingModel = BuildingModel(tuples_Temp[0].Item3, tolerance);
-                        if (buildingModel == null)
-                        {
-                            continue;
-                        }
-
-                        buildingModel.SetValue(BuildingModelParameter.Reference, building2Ds_Unidentified[i].Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
-                        result.Add(buildingModel);
-                        building2Ds_Unidentified.RemoveAt(i);
-                    }
-
-                    double storeyHeight = 3.0;
-
-                    for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
-                    {
-                        IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
-                        List<Point2D>? point2Ds = polygonalFace2D?.ExternalEdge?.GetPoints();
-                        if (point2Ds == null || point2Ds.Count == 0)
-                        {
-                            continue;
-                        }
-                        double elevation = 0;
-                        double distance = 0;
-                        foreach (Point2D point2D in point2Ds)
-                        {
-                            double distance_Point2D = double.MaxValue;
-                            Building? building = null;
-                            foreach (Tuple<BoundingBox2D, List<PolygonalFace2D>, Building> tuple in tuples)
-                            {
-                                double distance_BoundingBox2D = tuple.Item1.Distance(point2D);
-                                if (distance_BoundingBox2D < distance_Point2D)
-                                {
-                                    building = tuple.Item3;
-                                    distance_Point2D = distance_BoundingBox2D;
-                                }
-                            }
-
-                            if (building is null)
-                            {
-                                continue;
-                            }
-
-                            Point3D? min = building.BoundingBox()?.Min;
-                            if (min is null)
-                            {
-                                continue;
-                            }
-
-                            Point3D point3D = new(point2D.X, point2D.Y, min.Z);
-
-                            double elevation_Point3D = point3D.Z;
-                            if (double.IsNaN(elevation_Point3D))
-                            {
-                                continue;
-                            }
-
-                            Point3D? point3D_Closest = building.ClosestPoint(point3D);
-                            if (point3D_Closest == null || double.IsNaN(point3D_Closest.Z))
-                            {
-                                continue;
-                            }
-
-                            distance_Point2D = point3D.Distance(point3D_Closest);
-                            if (double.IsNaN(distance_Point2D))
-                            {
-                                continue;
-                            }
-
-                            if (distance_Point2D == 0)
-                            {
-                                elevation = elevation_Point3D;
-                                distance = 0;
-                                break;
-                            }
-
-                            elevation += (point3D_Closest.Z * distance_Point2D);
-                            distance += distance_Point2D;
-                        }
-
-                        if (distance > 0)
-                        {
-                            elevation /= distance;
-                        }
-
-                        if (Geometry.Spatial.Create.Plane(elevation) is Plane plane_Temp)
-                        {
-                            plane = plane_Temp;
-                        }
-
-                        IPolygonalFace3D? polygonalFace3D = plane.Convert(polygonalFace2D);
-
-                        Polyhedron? polyhedron = Geometry.Spatial.Create.Polyhedron(polygonalFace3D, plane.Normal * storeyHeight);
-                        if (polyhedron == null)
-                        {
-                            continue;
-                        }
-
-                        BuildingModel? buildingModel = BuildingModel(polyhedron, tolerance);
-                        if (buildingModel == null)
-                        {
-                            continue;
-                        }
-
-                        buildingModel.SetValue(BuildingModelParameter.Reference, building2Ds_Unidentified[i].Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
-                        result.Add(buildingModel);
-                        building2Ds_Unidentified.RemoveAt(i);
-                    }
+                    continue;
                 }
+
+                List<PolygonalFace2D>? polygonalFace2Ds = [];
+                foreach (ISurface surface in surfaces)
+                {
+                    PolygonalFace3D? polygonalFace3D = Geometry.Spatial.Query.Project<PolygonalFace3D>(plane, surface.Geometry, tolerance);
+                    if (polygonalFace3D == null)
+                    {
+                        continue;
+                    }
+
+                    PolygonalFace2D? polygonalFace2D = plane.Convert(polygonalFace3D);
+                    if (polygonalFace2D == null)
+                    {
+                        continue;
+                    }
+
+                    double area = polygonalFace2D.GetArea();
+                    if (area < tolerance)
+                    {
+                        continue;
+                    }
+
+                    polygonalFace2Ds.Add(polygonalFace2D);
+                }
+
+                polygonalFace2Ds = Geometry.Planar.Query.Union(polygonalFace2Ds);
+
+                if (polygonalFace2Ds == null || polygonalFace2Ds.Count == 0)
+                {
+                    continue;
+                }
+
+                BoundingBox2D? boundingBox2D = Geometry.Planar.Create.BoundingBox2D(polygonalFace2Ds);
+                if (boundingBox2D == null)
+                {
+                    continue;
+                }
+
+                tuples.Add(new Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>(boundingBox2D, polygonalFace2Ds, building));
+            }
+
+            if (tuples == null || tuples.Count == 0)
+            {
+                return result;
+            }
+
+            for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
+            {
+                Point2D? point2D = building2Ds_Unidentified[i]?.PolygonalFace2D?.GetInternalPoint();
+                if (point2D == null)
+                {
+                    continue;
+                }
+
+                List<Tuple<BoundingBox2D, List<PolygonalFace2D>, Building>> tuples_Temp = tuples.FindAll(x => x.Item1.InRange(point2D, tolerance));
+                if (tuples_Temp == null || tuples_Temp.Count == 0)
+                {
+                    continue;
+                }
+
+                tuples_Temp = tuples_Temp.FindAll(x => x.Item2.Find(x => x.InRange(point2D, tolerance)) != null);
+                if (tuples_Temp == null || tuples_Temp.Count == 0)
+                {
+                    continue;
+                }
+
+                BuildingModel? buildingModel = BuildingModel(tuples_Temp[0].Item3, tolerance);
+                if (buildingModel == null)
+                {
+                    continue;
+                }
+
+                buildingModel.SetValue(BuildingModelParameter.Reference, building2Ds_Unidentified[i].Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+                result.Add(buildingModel);
+                building2Ds_Unidentified.RemoveAt(i);
+            }
+
+            double storeyHeight = 3.0;
+
+            for (int i = building2Ds_Unidentified.Count - 1; i >= 0; i--)
+            {
+                IPolygonalFace2D? polygonalFace2D = building2Ds_Unidentified[i].PolygonalFace2D;
+                List<Point2D>? point2Ds = polygonalFace2D?.ExternalEdge?.GetPoints();
+                if (point2Ds == null || point2Ds.Count == 0)
+                {
+                    continue;
+                }
+                double elevation = 0;
+                double distance = 0;
+                foreach (Point2D point2D in point2Ds)
+                {
+                    double distance_Point2D = double.MaxValue;
+                    Building? building = null;
+                    foreach (Tuple<BoundingBox2D, List<PolygonalFace2D>, Building> tuple in tuples)
+                    {
+                        double distance_BoundingBox2D = tuple.Item1.Distance(point2D);
+                        if (distance_BoundingBox2D < distance_Point2D)
+                        {
+                            building = tuple.Item3;
+                            distance_Point2D = distance_BoundingBox2D;
+                        }
+                    }
+
+                    if (building is null)
+                    {
+                        continue;
+                    }
+
+                    Point3D? min = building.BoundingBox()?.Min;
+                    if (min is null)
+                    {
+                        continue;
+                    }
+
+                    Point3D point3D = new(point2D.X, point2D.Y, min.Z);
+
+                    double elevation_Point3D = point3D.Z;
+                    if (double.IsNaN(elevation_Point3D))
+                    {
+                        continue;
+                    }
+
+                    Point3D? point3D_Closest = building.ClosestPoint(point3D);
+                    if (point3D_Closest == null || double.IsNaN(point3D_Closest.Z))
+                    {
+                        continue;
+                    }
+
+                    distance_Point2D = point3D.Distance(point3D_Closest);
+                    if (double.IsNaN(distance_Point2D))
+                    {
+                        continue;
+                    }
+
+                    if (distance_Point2D == 0)
+                    {
+                        elevation = elevation_Point3D;
+                        distance = 0;
+                        break;
+                    }
+
+                    elevation += (point3D_Closest.Z * distance_Point2D);
+                    distance += distance_Point2D;
+                }
+
+                if (distance > 0)
+                {
+                    elevation /= distance;
+                }
+
+                if (Geometry.Spatial.Create.Plane(elevation) is Plane plane_Temp)
+                {
+                    plane = plane_Temp;
+                }
+
+                IPolygonalFace3D? polygonalFace3D = plane.Convert(polygonalFace2D);
+
+                Polyhedron? polyhedron = Geometry.Spatial.Create.Polyhedron(polygonalFace3D, plane.Normal * storeyHeight);
+                if (polyhedron == null)
+                {
+                    continue;
+                }
+
+                BuildingModel? buildingModel = BuildingModel(polyhedron, tolerance);
+                if (buildingModel == null)
+                {
+                    continue;
+                }
+
+                buildingModel.SetValue(BuildingModelParameter.Reference, building2Ds_Unidentified[i].Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+                result.Add(buildingModel);
+                building2Ds_Unidentified.RemoveAt(i);
             }
 
             return result;
