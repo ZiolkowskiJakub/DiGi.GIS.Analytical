@@ -81,7 +81,7 @@ namespace DiGi.GIS.Analytical
                 return null;
             }
 
-            if(building2Ds.Any())
+            if(!building2Ds.Any())
             {
                 return [];
             }
