@@ -76,12 +76,12 @@ namespace DiGi.GIS.Analytical
         /// <returns>A list of <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> objects if successful; otherwise, null.</returns>
         public static List<BuildingModel>? BuildingModels(this IEnumerable<Building2D>? building2Ds, IEnumerable<CityModel> cityModels, double tolerance = Core.Constants.Tolerance.Distance)
         {
-            if(building2Ds is null || cityModels is null)
+            if (building2Ds is null || cityModels is null)
             {
                 return null;
             }
 
-            if(!building2Ds.Any())
+            if (!building2Ds.Any())
             {
                 return [];
             }
