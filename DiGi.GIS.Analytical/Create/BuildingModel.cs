@@ -1,3 +1,4 @@
+using DiGi.Analytical.Building;
 using DiGi.Analytical.Building.Classes;
 using DiGi.Analytical.Building.Interfaces;
 using DiGi.CityGML;
@@ -8,6 +9,7 @@ using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
 using DiGi.GIS.Analytical.Enums;
 using DiGi.GIS.Classes;
+using DiGi.GIS.Enums;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,12 +19,13 @@ namespace DiGi.GIS.Analytical
     {
         /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> based on a 2D building and a collection of city models.
+        /// <para>The model is built from the 3D building found in <paramref name="cityModels"/>, so the tolerance defaults to <see cref="Constants.Tolerance.Coordinate"/>, the coordinate precision of the national 3D building model. Pass an explicit tolerance when the city models come from a more precise source.</para>
         /// </summary>
         /// <param name="building2D">The 2D building representation.</param>
         /// <param name="cityModels">A collection of city models used to find the corresponding 3D building.</param>
         /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
-        public static BuildingModel? BuildingModel(this Building2D? building2D, IEnumerable<CityModel>? cityModels, double tolerance = Core.Constants.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building2D? building2D, IEnumerable<CityModel>? cityModels, double tolerance = Constants.Tolerance.Coordinate)
         {
             if (building2D == null)
             {
@@ -42,11 +45,12 @@ namespace DiGi.GIS.Analytical
 
         /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 3D building object.
+        /// <para>The tolerance defaults to <see cref="Constants.Tolerance.Coordinate"/> rather than <see cref="Core.Constants.Tolerance.Distance"/> because the coordinates of the national 3D building model carry two decimal places - joining its boundary surfaces at a finer tolerance leaves the assembled rings open at the corners. Pass an explicit tolerance when the building comes from a more precise source.</para>
         /// </summary>
         /// <param name="building">The 3D building object.</param>
         /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
-        public static BuildingModel? BuildingModel(this Building? building, double tolerance = Core.Constants.Tolerance.Distance)
+        public static BuildingModel? BuildingModel(this Building? building, double tolerance = Constants.Tolerance.Coordinate)
         {
             IEnumerable<ISurface>? surfaces = building?.Surfaces;
             if (surfaces == null || surfaces.Count() == 0)
@@ -246,7 +250,7 @@ namespace DiGi.GIS.Analytical
 
             if (space_Last is not null)
             {
-                Plane plane_Max = Geometry.Spatial.Create.Plane(storeys * storeyHeight)!;
+                Plane plane_Max = Geometry.Spatial.Create.Plane(minElevation + (storeys * storeyHeight))!;
 
                 IPolygonalFace3D? polygonalFace3D_Roof = plane_Max.Project<IPolygonalFace3D>(polygonalFace3D);
                 if (polygonalFace3D_Roof is not null)
@@ -257,6 +261,90 @@ namespace DiGi.GIS.Analytical
                         result.Update(surfaceRoof);
                         result.Assign(surfaceRoof, space_Last);
                     }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 3D building and refines it with the data carried by the matching 2D building.
+        /// <para>The model is built from the 3D geometry of <paramref name="building"/>. When that geometry is missing or cannot be converted, the model is extruded from the footprint of <paramref name="building2D"/> at <see cref="Constants.StoreyHeight.Default"/>.</para>
+        /// <para>The storey count of <paramref name="building2D"/> is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to <see cref="Constants.StoreyHeight.Precision"/>, and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below <see cref="Constants.StoreyHeight.Min"/>.</para>
+        /// <para>A storey height above <see cref="Constants.StoreyHeight.Max"/> is handled by the function of the building. For a non residential building the storey height is clamped to <see cref="Constants.StoreyHeight.Max"/> and the storey count is kept, so the whole remainder is left to the lowest storey. For a residential building the storey count is treated as unreliable instead and recalculated from the extents of the model at <see cref="Constants.StoreyHeight.Default"/>, the storey height being derived again from that count - the resulting model may therefore hold a different number of storeys than <see cref="Building2D.Storeys"/>. When even the recalculated storey height stays above <see cref="Constants.StoreyHeight.Max"/> the model is returned unsplit.</para>
+        /// <para>The building reference (<see cref="GISGuidObject2D.Reference"/>) is carried over to <see cref="BuildingModelParameter.Reference"/>.</para>
+        /// <para>The split does not re-host openings - windows and doors stay assigned to the fragment inheriting the identifier of the component they were hosted by, not to the fragment geometrically containing them.</para>
+        /// <para>The tolerance defaults to <see cref="Constants.Tolerance.Coordinate"/> rather than <see cref="Core.Constants.Tolerance.Distance"/> because the coordinates of the national 3D building model carry two decimal places - at a finer tolerance the storey split leaves the ring assembled on the cutting plane open at the corners and no cut is made. Pass an explicit tolerance when the building comes from a more precise source.</para>
+        /// </summary>
+        /// <param name="building">The 3D building object.</param>
+        /// <param name="building2D">The 2D building representation providing the storey count, the function and the reference.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
+        public static BuildingModel? BuildingModel(this Building? building, Building2D? building2D, double tolerance = Constants.Tolerance.Coordinate)
+        {
+            if (building is null && building2D is null)
+            {
+                return null;
+            }
+
+            if (building2D is null)
+            {
+                return BuildingModel(building, tolerance);
+            }
+
+            if (building is null)
+            {
+                return BuildingModel(building2D, Constants.StoreyHeight.Default, tolerance);
+            }
+
+            BuildingModel? result = BuildingModel(building, tolerance);
+            if (result is null)
+            {
+                return BuildingModel(building2D, Constants.StoreyHeight.Default, tolerance);
+            }
+
+            if (!string.IsNullOrWhiteSpace(building2D.Reference))
+            {
+                result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+            }
+
+            ushort storeys = building2D.Storeys;
+
+            if (storeys > 1 && result.GetBoundingBox() is BoundingBox3D boundingBox3D)
+            {
+                List<double> elevations = [];
+
+                double height = Core.Query.Round(boundingBox3D.Height / storeys, Constants.StoreyHeight.Precision, Core.Enums.RoundingMethod.Floor);
+                if (height >= Constants.StoreyHeight.Min)
+                {
+                    if(GIS.Query.IsResidential(building2D))
+                    {
+                        if (height > Constants.StoreyHeight.Max)
+                        {
+                            storeys = System.Math.Max((ushort)1, System.Convert.ToUInt16(System.Math.Floor(boundingBox3D.Height / Constants.StoreyHeight.Default)));
+                            height = Core.Query.Round(boundingBox3D.Height / storeys, Constants.StoreyHeight.Precision, Core.Enums.RoundingMethod.Floor);
+                        }
+                    }
+                    else
+                    {
+                        if(height > Constants.StoreyHeight.Max)
+                        {
+                            height = Constants.StoreyHeight.Max;
+                        }
+                    }
+
+                    if (height <= Constants.StoreyHeight.Max)
+                    {
+                        for (int i = 1; i < storeys; i++)
+                        {
+                            elevations.Add(boundingBox3D.MaxZ - i * height);
+                        }
+                    }
+                }
+
+                if (elevations.Count > 0 && result.TrySplit(elevations, tolerance: tolerance))
+                {
+                    DiGi.Analytical.Building.Modify.ConvertAirs<IAir>(result);
                 }
             }
 
