@@ -11,9 +11,9 @@ namespace DiGi.GIS.Analytical.Enums
     public enum BuildingModelParameter
     {
         /// <summary>
-        /// Gets the Level Of Detail (LOD) of the building model.
+        /// Gets the data source information associated with the building model.
         /// </summary>
-        [ParameterProperties("8286ccdc-1731-4d66-b8a2-de6f52c00a24", "LOD", "Level Of Detail", Core.Parameter.Enums.AccessType.Read), StringParameterValue()] LOD,
+        [ParameterProperties("8286ccdc-1731-4d66-b8a2-de6f52c00a24", "Source", "Source", Core.Parameter.Enums.AccessType.Read), StringParameterValue()] Source,
 
         /// <summary>
         /// Gets the reference identifier associated with the building model.

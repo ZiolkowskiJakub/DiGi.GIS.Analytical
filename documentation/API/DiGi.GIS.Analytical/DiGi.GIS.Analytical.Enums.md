@@ -14,11 +14,11 @@ public enum BuildingModelParameter
 ```
 ### Fields
 
-<a name='DiGi.GIS.Analytical.Enums.BuildingModelParameter.LOD'></a>
+<a name='DiGi.GIS.Analytical.Enums.BuildingModelParameter.Source'></a>
 
-`LOD` 0
+`Source` 0
 
-Gets the Level Of Detail \(LOD\) of the building model\.
+Gets the data source information associated with the building model\.
 
 <a name='DiGi.GIS.Analytical.Enums.BuildingModelParameter.Reference'></a>
 
@@ -31,6 +31,41 @@ Gets the reference identifier associated with the building model\.
 `Code` 2
 
 Gets the administrative area code associated with the building model\.
+
+<a name='DiGi.GIS.Analytical.Enums.BuildingParameter'></a>
+
+## BuildingParameter Enum
+
+Parameters applicable to a Building\.
+
+```csharp
+public enum BuildingParameter
+```
+### Fields
+
+<a name='DiGi.GIS.Analytical.Enums.BuildingParameter.LOD'></a>
+
+`LOD` 0
+
+Level of Detail\.
+
+<a name='DiGi.GIS.Analytical.Enums.BuildingParameter.Year'></a>
+
+`Year` 1
+
+Model year\.
+
+<a name='DiGi.GIS.Analytical.Enums.BuildingParameter.Code'></a>
+
+`Code` 2
+
+Area code\.
+
+<a name='DiGi.GIS.Analytical.Enums.BuildingParameter.Source'></a>
+
+`Source` 3
+
+Source information\.
 
 <a name='DiGi.GIS.Analytical.Enums.LOD'></a>
 

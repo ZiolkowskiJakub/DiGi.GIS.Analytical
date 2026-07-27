@@ -4,12 +4,12 @@ using DiGi.Analytical.Building.Interfaces;
 using DiGi.CityGML;
 using DiGi.CityGML.Classes;
 using DiGi.CityGML.Interfaces;
+using DiGi.Core.Parameter.Classes;
 using DiGi.Geometry.Spatial;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.Geometry.Spatial.Interfaces;
 using DiGi.GIS.Analytical.Enums;
 using DiGi.GIS.Classes;
-using DiGi.GIS.Enums;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -52,7 +52,12 @@ namespace DiGi.GIS.Analytical
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
         public static BuildingModel? BuildingModel(this Building? building, double tolerance = Constants.Tolerance.Coordinate)
         {
-            IEnumerable<ISurface>? surfaces = building?.Surfaces;
+            if (building is null)
+            {
+                return null;
+            }
+
+            IEnumerable<ISurface>? surfaces = building.Surfaces;
             if (surfaces == null || surfaces.Count() == 0)
             {
                 return null;
@@ -61,7 +66,6 @@ namespace DiGi.GIS.Analytical
             Polyhedron? polyhedron = building.Polyhedron();
 
             BuildingModel result = new();
-            LOD lOD = LOD.LOD2;
 
             List<IComponent> components = [];
             foreach (ISurface surface in surfaces)
@@ -74,8 +78,6 @@ namespace DiGi.GIS.Analytical
                     {
                         continue;
                     }
-
-                    lOD = LOD.LOD1;
                 }
 
                 if (result.Update(component))
@@ -84,14 +86,22 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
-            Space space = new(polyhedron?.GetInternalPoint(), building?.UniqueId);
+            Space space = new(polyhedron?.GetInternalPoint(), building.UniqueId);
             result.Update(space);
             foreach (IComponent component in components)
             {
                 result.Assign(component, space);
             }
 
-            result.SetValue(BuildingModelParameter.LOD, lOD, new Core.Parameter.Classes.SetValueSettings() { TryConvert = true, CheckAccessType = false });
+            if (building.TryGetValue(BuildingParameter.Source, out string? source, new GetValueSettings(true, false)))
+            {
+                result.SetValue(BuildingModelParameter.Source, source);
+            }
+
+            if (building.TryGetValue(BuildingParameter.Code, out string? code, new GetValueSettings(true, false)))
+            {
+                result.SetValue(BuildingModelParameter.Code, code);
+            }
 
             return result;
         }
@@ -133,8 +143,6 @@ namespace DiGi.GIS.Analytical
                 result.Assign(component, space);
             }
 
-            result.SetValue(BuildingModelParameter.LOD, LOD.Undefined, new Core.Parameter.Classes.SetValueSettings() { TryConvert = true, CheckAccessType = false });
-
             return result;
         }
 
@@ -155,10 +163,14 @@ namespace DiGi.GIS.Analytical
             }
 
             BuildingModel? result = BuildingModel(polygonalFace3D, building2D!.Storeys, storeyHeight, tolerance);
-
-            if (result is not null && !string.IsNullOrWhiteSpace(building2D.Reference))
+            if (result is not null)
             {
-                result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+                result.SetValue(BuildingModelParameter.Source, "PL.PZGiK.337.BDOT10k");
+
+                if (!string.IsNullOrWhiteSpace(building2D.Reference))
+                {
+                    result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new SetValueSettings(true, false));
+                }
             }
 
             return result;
@@ -305,7 +317,7 @@ namespace DiGi.GIS.Analytical
 
             if (!string.IsNullOrWhiteSpace(building2D.Reference))
             {
-                result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+                result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new SetValueSettings(true, false));
             }
 
             ushort storeys = building2D.Storeys;
