@@ -46,15 +46,15 @@ public static class Create
 Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → Create
 ### Methods
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double)'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_)'></a>
 
-## Create\.BuildingModel\(this Building, Building2D, double\) Method
+## Create\.BuildingModel\(this Building, Building2D, double, IEnumerable\<double\>\) Method
 
 Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 3D building and refines it with the data carried by the matching 2D building\.
 
-The model is built from the 3D geometry of [building](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double).building 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double\)\.building'). When that geometry is missing or cannot be converted, the model is extruded from the footprint of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double\)\.building2D') at [Default](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Default 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Default').
+The model is built from the 3D geometry of [building](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building'). When that geometry is missing or cannot be converted, the model is extruded from the footprint of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building2D') at [Default](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Default 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Default').
 
-The storey count of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double\)\.building2D') is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to [Precision](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Precision 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Precision'), and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below [Min](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Min 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Min').
+The storey count of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building2D') is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to [Precision](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Precision 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Precision'), and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below [Min](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Min 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Min').
 
 A storey height above [Max](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Max 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Max') is handled by the function of the building. For a non residential building the storey height is clamped to [Max](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Max 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Max') and the storey count is kept, so the whole remainder is left to the lowest storey. For a residential building the storey count is treated as unreliable instead and recalculated from the extents of the model at [Default](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Default 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Default'), the storey height being derived again from that count - the resulting model may therefore hold a different number of storeys than [DiGi\.GIS\.Classes\.Building2D\.Storeys](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d.storeys 'DiGi\.GIS\.Classes\.Building2D\.Storeys'). When even the recalculated storey height stays above [Max](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Max 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Max') the model is returned unsplit.
 
@@ -65,27 +65,33 @@ The split does not re-host openings - windows and doors stay assigned to the fra
 The tolerance defaults to [Coordinate](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.Tolerance.Coordinate 'DiGi\.GIS\.Analytical\.Constants\.Tolerance\.Coordinate') rather than [DiGi\.Core\.Constants\.Tolerance\.Distance](https://learn.microsoft.com/en-us/dotnet/api/digi.core.constants.tolerance.distance 'DiGi\.Core\.Constants\.Tolerance\.Distance') because the coordinates of the national 3D building model carry two decimal places - at a finer tolerance the storey split leaves the ring assembled on the cutting plane open at the corners and no cut is made. Pass an explicit tolerance when the building comes from a more precise source.
 
 ```csharp
-public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.CityGML.Classes.Building? building, DiGi.GIS.Classes.Building2D? building2D, double tolerance=0.01);
+public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.CityGML.Classes.Building? building, DiGi.GIS.Classes.Building2D? building2D, double tolerance=0.01, System.Collections.Generic.IEnumerable<double>? candidateTolerances=null);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double).building'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building'></a>
 
 `building` [DiGi\.CityGML\.Classes\.Building](https://learn.microsoft.com/en-us/dotnet/api/digi.citygml.classes.building 'DiGi\.CityGML\.Classes\.Building')
 
 The 3D building object\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double).building2D'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D'></a>
 
 `building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
 
 The 2D building representation providing the storey count, the function and the reference\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double).tolerance'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).tolerance'></a>
 
 `tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
 
 The distance tolerance for geometric calculations\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).candidateTolerances'></a>
+
+`candidateTolerances` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+Optional candidate tolerances to attempt if the polyhedron is not closed at the specified tolerance\.
 
 #### Returns
 [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')  

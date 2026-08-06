@@ -291,8 +291,9 @@ namespace DiGi.GIS.Analytical
         /// <param name="building">The 3D building object.</param>
         /// <param name="building2D">The 2D building representation providing the storey count, the function and the reference.</param>
         /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <param name="candidateTolerances">Optional candidate tolerances to attempt if the polyhedron is not closed at the specified tolerance.</param>
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
-        public static BuildingModel? BuildingModel(this Building? building, Building2D? building2D, double tolerance = Constants.Tolerance.Coordinate)
+        public static BuildingModel? BuildingModel(this Building? building, Building2D? building2D, double tolerance = Constants.Tolerance.Coordinate, IEnumerable<double>? candidateTolerances = null)
         {
             if (building is null && building2D is null)
             {
@@ -309,10 +310,25 @@ namespace DiGi.GIS.Analytical
                 return BuildingModel(building2D, Constants.StoreyHeight.Default, tolerance);
             }
 
-            BuildingModel? result = BuildingModel(building, tolerance);
+            double effectiveTolerance = tolerance;
+            Polyhedron? polyhedron = building?.Polyhedron();
+            if (polyhedron is not null && !polyhedron.IsClosed(effectiveTolerance))
+            {
+                candidateTolerances ??= [0.02, 0.05, 0.1];
+                foreach (double candidateTolerance in candidateTolerances)
+                {
+                    if (polyhedron.IsClosed(candidateTolerance))
+                    {
+                        effectiveTolerance = candidateTolerance;
+                        break;
+                    }
+                }
+            }
+
+            BuildingModel? result = BuildingModel(building, effectiveTolerance);
             if (result is null)
             {
-                return BuildingModel(building2D, Constants.StoreyHeight.Default, tolerance);
+                return BuildingModel(building2D, Constants.StoreyHeight.Default, effectiveTolerance);
             }
 
             if (!string.IsNullOrWhiteSpace(building2D.Reference))
@@ -329,7 +345,7 @@ namespace DiGi.GIS.Analytical
                 double height = Core.Query.Round(boundingBox3D.Height / storeys, Constants.StoreyHeight.Precision, Core.Enums.RoundingMethod.Floor);
                 if (height >= Constants.StoreyHeight.Min)
                 {
-                    if(GIS.Query.IsResidential(building2D))
+                    if (GIS.Query.IsResidential(building2D))
                     {
                         if (height > Constants.StoreyHeight.Max)
                         {
@@ -339,7 +355,7 @@ namespace DiGi.GIS.Analytical
                     }
                     else
                     {
-                        if(height > Constants.StoreyHeight.Max)
+                        if (height > Constants.StoreyHeight.Max)
                         {
                             height = Constants.StoreyHeight.Max;
                         }
@@ -349,12 +365,12 @@ namespace DiGi.GIS.Analytical
                     {
                         for (int i = 1; i < storeys; i++)
                         {
-                            elevations.Add(boundingBox3D.MaxZ - i * height);
+                            elevations.Add(boundingBox3D.MaxZ - (i * height));
                         }
                     }
                 }
 
-                if (elevations.Count > 0 && result.TrySplit(elevations, tolerance: tolerance))
+                if (elevations.Count > 0 && result.TrySplit(elevations, tolerance: effectiveTolerance))
                 {
                     DiGi.Analytical.Building.Modify.ConvertAirs<IAir>(result);
                 }
