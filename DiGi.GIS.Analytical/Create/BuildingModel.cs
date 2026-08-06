@@ -147,36 +147,6 @@ namespace DiGi.GIS.Analytical
         }
 
         /// <summary>
-        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 2D building representation by extruding it storey by storey.
-        /// <para>The building reference (<see cref="GISGuidObject2D.Reference"/>) is carried over to <see cref="BuildingModelParameter.Reference"/>.</para>
-        /// </summary>
-        /// <param name="building2D">The 2D building representation.</param>
-        /// <param name="storeyHeight">The height of a single storey in meters used for the extrusion.</param>
-        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
-        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> instance if successful; otherwise, null.</returns>
-        public static BuildingModel? BuildingModel(this Building2D? building2D, double storeyHeight = 3.0, double tolerance = Core.Constants.Tolerance.Distance)
-        {
-            PolygonalFace3D? polygonalFace3D = Geometry.Spatial.Constants.Plane.WorldZ.Convert(building2D?.PolygonalFace2D);
-            if (polygonalFace3D is null)
-            {
-                return null;
-            }
-
-            BuildingModel? result = BuildingModel(polygonalFace3D, building2D!.Storeys, storeyHeight, tolerance);
-            if (result is not null)
-            {
-                result.SetValue(BuildingModelParameter.Source, "PL.PZGiK.337.BDOT10k");
-
-                if (!string.IsNullOrWhiteSpace(building2D.Reference))
-                {
-                    result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new SetValueSettings(true, false));
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> by extruding a polygonal face into the specified number of storeys.
         /// </summary>
         /// <param name="polygonalFace3D">The base polygonal face to extrude.</param>
@@ -280,8 +250,50 @@ namespace DiGi.GIS.Analytical
         }
 
         /// <summary>
+        /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 2D building representation by extruding it storey by storey from the given base elevation.
+        /// <para>The building reference (<see cref="GISGuidObject2D.Reference"/>) is carried over to <see cref="BuildingModelParameter.Reference"/>.</para>
+        /// </summary>
+        /// <param name="building2D">The 2D building representation.</param>
+        /// <param name="elevation">The base elevation in meters above sea level the footprint is extruded from. A not-a-number elevation means that no elevation is known and the method returns null rather than placing the building at a guessed height - the signal <see cref="BuildingModelAsync(System.Net.Http.HttpClient, Building, Building2D, double, IEnumerable{double})"/> relies on to decide whether the terrain service has to be queried.</param>
+        /// <param name="storeyHeight">The height of a single storey in meters used for the extrusion.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> instance if successful; otherwise, null.</returns>
+        public static BuildingModel? BuildingModel(this Building2D? building2D, double elevation = 0, double storeyHeight = 3.0, double tolerance = Core.Constants.Tolerance.Distance)
+        {
+            if (double.IsNaN(elevation))
+            {
+                return null;
+            }
+
+            Plane? plane = Geometry.Spatial.Create.Plane(elevation);
+            if (plane is null)
+            {
+                return null;
+            }
+
+            PolygonalFace3D? polygonalFace3D = plane.Convert(building2D?.PolygonalFace2D);
+            if (polygonalFace3D is null)
+            {
+                return null;
+            }
+
+            BuildingModel? result = BuildingModel(polygonalFace3D, building2D!.Storeys, storeyHeight, tolerance);
+            if (result is not null)
+            {
+                result.SetValue(BuildingModelParameter.Source, "PL.PZGiK.337.BDOT10k");
+
+                if (!string.IsNullOrWhiteSpace(building2D.Reference))
+                {
+                    result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new SetValueSettings(true, false));
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 3D building and refines it with the data carried by the matching 2D building.
-        /// <para>The model is built from the 3D geometry of <paramref name="building"/>. When that geometry is missing or cannot be converted, the model is extruded from the footprint of <paramref name="building2D"/> at <see cref="Constants.StoreyHeight.Default"/>.</para>
+        /// <para>The model is built from the 3D geometry of <paramref name="building"/>. When that geometry is missing or cannot be converted, the model is extruded from the footprint of <paramref name="building2D"/> at <see cref="Constants.StoreyHeight.Default"/>, starting from <paramref name="elevation"/>.</para>
         /// <para>The storey count of <paramref name="building2D"/> is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to <see cref="Constants.StoreyHeight.Precision"/>, and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below <see cref="Constants.StoreyHeight.Min"/>.</para>
         /// <para>A storey height above <see cref="Constants.StoreyHeight.Max"/> is handled by the function of the building. For a non residential building the storey height is clamped to <see cref="Constants.StoreyHeight.Max"/> and the storey count is kept, so the whole remainder is left to the lowest storey. For a residential building the storey count is treated as unreliable instead and recalculated from the extents of the model at <see cref="Constants.StoreyHeight.Default"/>, the storey height being derived again from that count - the resulting model may therefore hold a different number of storeys than <see cref="Building2D.Storeys"/>. When even the recalculated storey height stays above <see cref="Constants.StoreyHeight.Max"/> the model is returned unsplit.</para>
         /// <para>The building reference (<see cref="GISGuidObject2D.Reference"/>) is carried over to <see cref="BuildingModelParameter.Reference"/>.</para>
@@ -290,10 +302,11 @@ namespace DiGi.GIS.Analytical
         /// </summary>
         /// <param name="building">The 3D building object.</param>
         /// <param name="building2D">The 2D building representation providing the storey count, the function and the reference.</param>
+        /// <param name="elevation">The base elevation in meters above sea level. It is read only on the extruded fallback and is ignored when the 3D geometry converts, since that geometry carries its own elevations. A not-a-number elevation refuses the fallback and returns null instead of placing the building at a guessed height.</param>
         /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
         /// <param name="candidateTolerances">Optional candidate tolerances to attempt if the polyhedron is not closed at the specified tolerance.</param>
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
-        public static BuildingModel? BuildingModel(this Building? building, Building2D? building2D, double tolerance = Constants.Tolerance.Coordinate, IEnumerable<double>? candidateTolerances = null)
+        public static BuildingModel? BuildingModel(this Building? building, Building2D? building2D, double elevation = 0, double tolerance = Constants.Tolerance.Coordinate, IEnumerable<double>? candidateTolerances = null)
         {
             if (building is null && building2D is null)
             {
@@ -307,7 +320,7 @@ namespace DiGi.GIS.Analytical
 
             if (building is null)
             {
-                return BuildingModel(building2D, Constants.StoreyHeight.Default, tolerance);
+                return BuildingModel(building2D, elevation, Constants.StoreyHeight.Default, tolerance);
             }
 
             double effectiveTolerance = tolerance;
@@ -328,7 +341,7 @@ namespace DiGi.GIS.Analytical
             BuildingModel? result = BuildingModel(building, effectiveTolerance);
             if (result is null)
             {
-                return BuildingModel(building2D, Constants.StoreyHeight.Default, effectiveTolerance);
+                return BuildingModel(building2D, elevation, Constants.StoreyHeight.Default, effectiveTolerance);
             }
 
             if (!string.IsNullOrWhiteSpace(building2D.Reference))

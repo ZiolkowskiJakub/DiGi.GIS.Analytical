@@ -46,15 +46,15 @@ public static class Create
 Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → Create
 ### Methods
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_)'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_)'></a>
 
-## Create\.BuildingModel\(this Building, Building2D, double, IEnumerable\<double\>\) Method
+## Create\.BuildingModel\(this Building, Building2D, double, double, IEnumerable\<double\>\) Method
 
 Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 3D building and refines it with the data carried by the matching 2D building\.
 
-The model is built from the 3D geometry of [building](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building'). When that geometry is missing or cannot be converted, the model is extruded from the footprint of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building2D') at [Default](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Default 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Default').
+The model is built from the 3D geometry of [building](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).building 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building'). When that geometry is missing or cannot be converted, the model is extruded from the footprint of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building2D') at [Default](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Default 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Default'), starting from [elevation](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).elevation 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.elevation').
 
-The storey count of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building2D') is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to [Precision](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Precision 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Precision'), and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below [Min](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Min 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Min').
+The storey count of [building2D](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).building2D 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, double, System\.Collections\.Generic\.IEnumerable\<double\>\)\.building2D') is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to [Precision](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Precision 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Precision'), and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below [Min](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Min 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Min').
 
 A storey height above [Max](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Max 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Max') is handled by the function of the building. For a non residential building the storey height is clamped to [Max](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Max 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Max') and the storey count is kept, so the whole remainder is left to the lowest storey. For a residential building the storey count is treated as unreliable instead and recalculated from the extents of the model at [Default](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Default 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Default'), the storey height being derived again from that count - the resulting model may therefore hold a different number of storeys than [DiGi\.GIS\.Classes\.Building2D\.Storeys](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d.storeys 'DiGi\.GIS\.Classes\.Building2D\.Storeys'). When even the recalculated storey height stays above [Max](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.StoreyHeight.Max 'DiGi\.GIS\.Analytical\.Constants\.StoreyHeight\.Max') the model is returned unsplit.
 
@@ -65,29 +65,35 @@ The split does not re-host openings - windows and doors stay assigned to the fra
 The tolerance defaults to [Coordinate](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.Tolerance.Coordinate 'DiGi\.GIS\.Analytical\.Constants\.Tolerance\.Coordinate') rather than [DiGi\.Core\.Constants\.Tolerance\.Distance](https://learn.microsoft.com/en-us/dotnet/api/digi.core.constants.tolerance.distance 'DiGi\.Core\.Constants\.Tolerance\.Distance') because the coordinates of the national 3D building model carry two decimal places - at a finer tolerance the storey split leaves the ring assembled on the cutting plane open at the corners and no cut is made. Pass an explicit tolerance when the building comes from a more precise source.
 
 ```csharp
-public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.CityGML.Classes.Building? building, DiGi.GIS.Classes.Building2D? building2D, double tolerance=0.01, System.Collections.Generic.IEnumerable<double>? candidateTolerances=null);
+public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.CityGML.Classes.Building? building, DiGi.GIS.Classes.Building2D? building2D, double elevation=0.0, double tolerance=0.01, System.Collections.Generic.IEnumerable<double>? candidateTolerances=null);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).building'></a>
 
 `building` [DiGi\.CityGML\.Classes\.Building](https://learn.microsoft.com/en-us/dotnet/api/digi.citygml.classes.building 'DiGi\.CityGML\.Classes\.Building')
 
 The 3D building object\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).building2D'></a>
 
 `building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
 
 The 2D building representation providing the storey count, the function and the reference\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).tolerance'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).elevation'></a>
+
+`elevation` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The base elevation in meters above sea level\. It is read only on the extruded fallback and is ignored when the 3D geometry converts, since that geometry carries its own elevations\. A not\-a\-number elevation refuses the fallback and returns null instead of placing the building at a guessed height\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).tolerance'></a>
 
 `tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
 
 The distance tolerance for geometric calculations\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).candidateTolerances'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_).candidateTolerances'></a>
 
 `candidateTolerances` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
 
@@ -192,32 +198,38 @@ The distance tolerance for geometric calculations\.
 [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')  
 A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') if successful; otherwise, null\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double)'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double,double)'></a>
 
-## Create\.BuildingModel\(this Building2D, double, double\) Method
+## Create\.BuildingModel\(this Building2D, double, double, double\) Method
 
-Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 2D building representation by extruding it storey by storey\.
+Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 2D building representation by extruding it storey by storey from the given base elevation\.
 
 The building reference ([DiGi\.GIS\.Classes\.GISGuidObject2D\.Reference](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.gisguidobject2d.reference 'DiGi\.GIS\.Classes\.GISGuidObject2D\.Reference')) is carried over to [Reference](DiGi.GIS.Analytical.Enums.md#DiGi.GIS.Analytical.Enums.BuildingModelParameter.Reference 'DiGi\.GIS\.Analytical\.Enums\.BuildingModelParameter\.Reference').
 
 ```csharp
-public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.GIS.Classes.Building2D? building2D, double storeyHeight=3.0, double tolerance=1E-06);
+public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.GIS.Classes.Building2D? building2D, double elevation=0.0, double storeyHeight=3.0, double tolerance=1E-06);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double).building2D'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double,double).building2D'></a>
 
 `building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
 
 The 2D building representation\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double).storeyHeight'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double,double).elevation'></a>
+
+`elevation` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The base elevation in meters above sea level the footprint is extruded from\. A not\-a\-number elevation means that no elevation is known and the method returns null rather than placing the building at a guessed height \- the signal [BuildingModelAsync\(this HttpClient, Building, Building2D, double, IEnumerable&lt;double&gt;\)](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_) 'DiGi\.GIS\.Analytical\.Create\.BuildingModelAsync\(this System\.Net\.Http\.HttpClient, DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, System\.Collections\.Generic\.IEnumerable\<double\>\)') relies on to decide whether the terrain service has to be queried\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double,double).storeyHeight'></a>
 
 `storeyHeight` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
 
 The height of a single storey in meters used for the extrusion\.
 
-<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double).tolerance'></a>
+<a name='DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.GIS.Classes.Building2D,double,double,double).tolerance'></a>
 
 `tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
 
@@ -261,6 +273,98 @@ The distance tolerance for geometric calculations\.
 #### Returns
 [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')  
 A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') if successful; otherwise, null\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_)'></a>
+
+## Create\.BuildingModelAsync\(this HttpClient, Building, Building2D, double, IEnumerable\<double\>\) Method
+
+Asynchronously creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 3D building, refines it with the data carried by the matching 2D building and queries the terrain elevation only when the footprint has to be extruded\.
+
+The model is attempted from the 3D geometry first, with the elevation withheld as a not-a-number, so the extruded fallback of [BuildingModel\(this Building, Building2D, double, double, IEnumerable&lt;double&gt;\)](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModel(thisDiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,double,System.Collections.Generic.IEnumerable_double_) 'DiGi\.GIS\.Analytical\.Create\.BuildingModel\(this DiGi\.CityGML\.Classes\.Building, DiGi\.GIS\.Classes\.Building2D, double, double, System\.Collections\.Generic\.IEnumerable\<double\>\)') refuses to run. A model returned by that attempt was therefore built from the 3D geometry, which carries its own elevations, and no terrain query is made. Only when it returns null is the elevation fetched and the creation repeated.
+
+The elevation enriches the model, it is not a precondition - when the terrain service cannot be reached the footprint is still extruded, from an elevation of zero.
+
+```csharp
+public static System.Threading.Tasks.Task<DiGi.Analytical.Building.Classes.BuildingModel?> BuildingModelAsync(this System.Net.Http.HttpClient? httpClient, DiGi.CityGML.Classes.Building? building, DiGi.GIS.Classes.Building2D? building2D, double tolerance=0.01, System.Collections.Generic.IEnumerable<double>? candidateTolerances=null);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).httpClient'></a>
+
+`httpClient` [System\.Net\.Http\.HttpClient](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient 'System\.Net\.Http\.HttpClient')
+
+The HTTP client used to query terrain elevation\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building'></a>
+
+`building` [DiGi\.CityGML\.Classes\.Building](https://learn.microsoft.com/en-us/dotnet/api/digi.citygml.classes.building 'DiGi\.CityGML\.Classes\.Building')
+
+The 3D building object\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).building2D'></a>
+
+`building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
+
+The 2D building representation\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).tolerance'></a>
+
+`tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The distance tolerance for geometric calculations\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.CityGML.Classes.Building,DiGi.GIS.Classes.Building2D,double,System.Collections.Generic.IEnumerable_double_).candidateTolerances'></a>
+
+`candidateTolerances` [System\.Collections\.Generic\.IEnumerable&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1 'System\.Collections\.Generic\.IEnumerable\`1')
+
+Optional candidate tolerances to attempt if the polyhedron is not closed\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') if successful; otherwise, null\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.GIS.Classes.Building2D,double,double)'></a>
+
+## Create\.BuildingModelAsync\(this HttpClient, Building2D, double, double\) Method
+
+Asynchronously creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') from a 2D building representation by extruding it storey by storey from the terrain elevation of its footprint\.
+
+The elevation is queried once, for the internal point of the footprint, through [DiGi\.GIS\.Query\.ElevationAsync\(System\.Net\.Http\.HttpClient,DiGi\.Geometry\.Planar\.Classes\.Point2D\)](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.query.elevationasync#digi-gis-query-elevationasync(system-net-http-httpclient-digi-geometry-planar-classes-point2d) 'DiGi\.GIS\.Query\.ElevationAsync\(System\.Net\.Http\.HttpClient,DiGi\.Geometry\.Planar\.Classes\.Point2D\)').
+
+The elevation enriches the model, it is not a precondition - when the terrain service cannot be reached the model is still extruded, from an elevation of zero. Only a null client or a footprint that cannot be extruded yields null.
+
+```csharp
+public static System.Threading.Tasks.Task<DiGi.Analytical.Building.Classes.BuildingModel?> BuildingModelAsync(this System.Net.Http.HttpClient? httpClient, DiGi.GIS.Classes.Building2D? building2D, double storeyHeight=3.0, double tolerance=1E-06);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.GIS.Classes.Building2D,double,double).httpClient'></a>
+
+`httpClient` [System\.Net\.Http\.HttpClient](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient 'System\.Net\.Http\.HttpClient')
+
+The HTTP client used to query terrain elevation\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.GIS.Classes.Building2D,double,double).building2D'></a>
+
+`building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
+
+The 2D building representation\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.GIS.Classes.Building2D,double,double).storeyHeight'></a>
+
+`storeyHeight` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The height of a single storey in meters used for the extrusion\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelAsync(thisSystem.Net.Http.HttpClient,DiGi.GIS.Classes.Building2D,double,double).tolerance'></a>
+
+`tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The distance tolerance for geometric calculations\.
+
+#### Returns
+[System\.Threading\.Tasks\.Task&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1 'System\.Threading\.Tasks\.Task\`1')  
+A [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') instance if successful; otherwise, null\.
 
 <a name='DiGi.GIS.Analytical.Create.BuildingModels(thisDiGi.GIS.Classes.GISModelFile,string,double)'></a>
 
@@ -523,6 +627,29 @@ A collection of reference strings used to identify the building models to retrie
 #### Returns
 [System\.Collections\.Generic\.Dictionary&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')[,](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2 'System\.Collections\.Generic\.Dictionary\`2')  
 A dictionary mapping unique identifiers to [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') objects, or null if the path is invalid or references are null\.
+
+<a name='DiGi.GIS.Analytical.Query.Elevation(thisDiGi.Geometry.Spatial.Classes.Point3D)'></a>
+
+## Query\.Elevation\(this Point3D\) Method
+
+Reads the elevation carried by a point fetched from the terrain service\.
+
+A point that was never fetched, or one whose elevation the service reported as not a number, falls back to zero - the terrain service may not decide whether a building is created, so a model placed at sea level is preferred over no model at all.
+
+```csharp
+public static double Elevation(this DiGi.Geometry.Spatial.Classes.Point3D? point3D);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Query.Elevation(thisDiGi.Geometry.Spatial.Classes.Point3D).point3D'></a>
+
+`point3D` [DiGi\.Geometry\.Spatial\.Classes\.Point3D](https://learn.microsoft.com/en-us/dotnet/api/digi.geometry.spatial.classes.point3d 'DiGi\.Geometry\.Spatial\.Classes\.Point3D')
+
+The point returned by the terrain service\.
+
+#### Returns
+[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')  
+The elevation of the point, or zero when it carries none\.
 
 <a name='DiGi.GIS.Analytical.Query.Horizontal(thisDiGi.Geometry.Spatial.Classes.Vector3D,double)'></a>
 
