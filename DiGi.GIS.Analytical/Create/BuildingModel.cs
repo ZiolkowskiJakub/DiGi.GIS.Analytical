@@ -188,7 +188,10 @@ namespace DiGi.GIS.Analytical
                     continue;
                 }
 
-                internalPoint.Move(new Vector3D(0, 0, (min + max) / 2));
+                // The point already lies on the storey floor, so it is raised by half the storey rather than
+                // moved by the absolute mid height - moving by the latter adds the base elevation a second
+                // time and leaves the space point above the roof of every building not sitting at sea level.
+                internalPoint.Move(new Vector3D(0, 0, (max - min) / 2));
 
                 Space space = new(internalPoint, $"Storey {i + 1}");
                 result.Update(space);

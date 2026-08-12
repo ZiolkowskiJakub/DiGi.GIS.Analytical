@@ -173,3 +173,20 @@ public const double Coordinate = 0.01;
 
 #### Field Value
 [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+<a name='DiGi.GIS.Analytical.Constants.Tolerance.Enclosure'></a>
+
+## Tolerance\.Enclosure Field
+
+The distance tolerance in meters at which the shell of a space built from the national 3D building model is required to close\.
+
+It is five times [Coordinate](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.Tolerance.Coordinate 'DiGi\.GIS\.Analytical\.Constants\.Tolerance\.Coordinate'), and that margin is not slack: each boundary surface is projected onto its own best fit plane, so a source ring that is not exactly planar leaves a shared vertex in a slightly different place on each of the faces meeting at it, and the gap grows with the non-planarity of the ring rather than with the coordinate precision alone. Buildings detailed enough to carry rings out of plane by more than a centimetre are the reason this is the acceptance value rather than [Coordinate](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.Tolerance.Coordinate 'DiGi\.GIS\.Analytical\.Constants\.Tolerance\.Coordinate').
+
+A shell needing more than this is reported rather than accepted - beyond a few centimetres the welding stops distinguishing vertices that were genuinely meant to coincide from ones that were not.
+
+```csharp
+public const double Enclosure = 0.05;
+```
+
+#### Field Value
+[System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')

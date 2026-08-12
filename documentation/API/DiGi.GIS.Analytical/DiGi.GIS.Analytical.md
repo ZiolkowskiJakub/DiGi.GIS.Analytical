@@ -502,6 +502,37 @@ The distance tolerance for geometric calculations\.
 [System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')  
 A list of [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel') objects for the 2D buildings that could be resolved; otherwise, null\.
 
+<a name='DiGi.GIS.Analytical.Create.BuildingModelValidationResult(thisDiGi.Analytical.Building.Classes.BuildingModel,double)'></a>
+
+## Create\.BuildingModelValidationResult\(this BuildingModel, double\) Method
+
+Validates a building model and collects everything that is wrong with it into a single result\.
+
+Every check is run and every failure recorded - the method does not stop at the first one, because a model is usually broken in more than one way and knowing which combination it carries is what points at the stage that broke it.
+
+Enclosure is the check this exists for. It is evaluated per space through [DiGi\.Analytical\.Building\.Classes\.BuildingModel\.GetShell\(DiGi\.Analytical\.Building\.Interfaces\.ISpace,System\.Nullable\{DiGi\.Geometry\.Core\.Enums\.Side\},System\.Nullable\{DiGi\.Geometry\.Core\.Enums\.Orientation\},System\.Nullable\{DiGi\.Geometry\.Core\.Enums\.Orientation\},System\.Double\)](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel.getshell#digi-analytical-building-classes-buildingmodel-getshell(digi-analytical-building-interfaces-ispace-system-nullable{digi-geometry-core-enums-side}-system-nullable{digi-geometry-core-enums-orientation}-system-nullable{digi-geometry-core-enums-orientation}-system-double) 'DiGi\.Analytical\.Building\.Classes\.BuildingModel\.GetShell\(DiGi\.Analytical\.Building\.Interfaces\.ISpace,System\.Nullable\{DiGi\.Geometry\.Core\.Enums\.Side\},System\.Nullable\{DiGi\.Geometry\.Core\.Enums\.Orientation\},System\.Nullable\{DiGi\.Geometry\.Core\.Enums\.Orientation\},System\.Double\)'), so a curve wall is resolved into the surface it sweeps and an extruded model is judged by the same rule as one converted from CityGML. Alongside the verdict the smallest tolerance at which the whole model closes is reported, which separates a model whose source geometry is merely imprecise from one that never had a boundary.
+
+```csharp
+public static DiGi.GIS.Classes.BuildingModelValidationResult? BuildingModelValidationResult(this DiGi.Analytical.Building.Classes.BuildingModel? buildingModel, double tolerance=0.05);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelValidationResult(thisDiGi.Analytical.Building.Classes.BuildingModel,double).buildingModel'></a>
+
+`buildingModel` [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')
+
+The building model to validate\.
+
+<a name='DiGi.GIS.Analytical.Create.BuildingModelValidationResult(thisDiGi.Analytical.Building.Classes.BuildingModel,double).tolerance'></a>
+
+`tolerance` [System\.Double](https://learn.microsoft.com/en-us/dotnet/api/system.double 'System\.Double')
+
+The distance tolerance the enclosure is required to hold at\.
+
+#### Returns
+[BuildingModelValidationResult](DiGi.GIS.Classes.md#DiGi.GIS.Classes.BuildingModelValidationResult 'DiGi\.GIS\.Classes\.BuildingModelValidationResult')  
+A [BuildingModelValidationResult\(this BuildingModel, double\)](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModelValidationResult(thisDiGi.Analytical.Building.Classes.BuildingModel,double) 'DiGi\.GIS\.Analytical\.Create\.BuildingModelValidationResult\(this DiGi\.Analytical\.Building\.Classes\.BuildingModel, double\)'), or null when [buildingModel](DiGi.GIS.Analytical.md#DiGi.GIS.Analytical.Create.BuildingModelValidationResult(thisDiGi.Analytical.Building.Classes.BuildingModel,double).buildingModel 'DiGi\.GIS\.Analytical\.Create\.BuildingModelValidationResult\(this DiGi\.Analytical\.Building\.Classes\.BuildingModel, double\)\.buildingModel') is null\.
+
 <a name='DiGi.GIS.Analytical.Create.Component(thisDiGi.Geometry.Spatial.Interfaces.IPolygonalFace3D,DiGi.Geometry.Spatial.Classes.Polyhedron,double)'></a>
 
 ## Create\.Component\(this IPolygonalFace3D, Polyhedron, double\) Method
