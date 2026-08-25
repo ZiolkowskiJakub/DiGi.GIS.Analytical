@@ -330,14 +330,15 @@ namespace DiGi.GIS.Analytical
             Polyhedron? polyhedron = building?.Polyhedron();
             if (polyhedron is not null && !polyhedron.IsClosed(effectiveTolerance))
             {
-                candidateTolerances ??= [0.02, 0.05, 0.1];
-                foreach (double candidateTolerance in candidateTolerances)
+                candidateTolerances ??= [0.02, Constants.Tolerance.Enclosure, 0.1];
+
+                // The tightest candidate that closes, so the storey split is cut with no more slack than the
+                // geometry actually needs. Sorted and bisected inside, so an unordered caller ladder no longer
+                // settles on a coarser value than necessary.
+                double? closingTolerance = polyhedron.ClosingTolerance(candidateTolerances);
+                if (closingTolerance is not null)
                 {
-                    if (polyhedron.IsClosed(candidateTolerance))
-                    {
-                        effectiveTolerance = candidateTolerance;
-                        break;
-                    }
+                    effectiveTolerance = closingTolerance.Value;
                 }
             }
 

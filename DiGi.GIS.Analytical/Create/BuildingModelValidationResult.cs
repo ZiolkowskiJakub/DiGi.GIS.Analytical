@@ -94,22 +94,15 @@ namespace DiGi.GIS.Analytical
 
                 shellCount++;
 
-                double minEnclosingTolerance_Shell = double.NaN;
-                for (int j = 0; j < tolerances.Length; j++)
-                {
-                    if (shell.IsClosed(tolerances[j]))
-                    {
-                        minEnclosingTolerance_Shell = tolerances[j];
-                        break;
-                    }
-                }
+                // Bisected rather than walked - closure is monotonic in tolerance, so the ladder is sorted by
+                // construction and the tightest closing value is found in four evaluations instead of nine.
+                double minEnclosingTolerance_Shell = shell.ClosingTolerance(tolerances) ?? double.NaN;
 
                 // A shell closing at a tolerance finer than the one asked for is enclosed - the requirement is
-                // to close at the given tolerance or below it, not at that value in particular. The distinction
-                // is not academic: welding is not transitive, so a coarser tolerance can merge vertices that
-                // were meant to stay apart, collapse the edges between them and report a shell that is
-                // genuinely closed as open. Measured on the stored data, models closing at 1E-06 do fail at
-                // 0.05 this way.
+                // to close at the given tolerance or below it, not at that value in particular. The tightest
+                // value is kept because it reports how much slack the shell actually needs. Closure itself is
+                // monotonic now, so a shell closing at a finer tolerance also closes at the requested one; it
+                // was not when this ladder was written, and models closing at 1E-06 did fail at 0.05.
                 bool enclosed_Shell = !double.IsNaN(minEnclosingTolerance_Shell) && minEnclosingTolerance_Shell <= tolerance;
                 if (!enclosed_Shell && shell.IsClosed(tolerance))
                 {
