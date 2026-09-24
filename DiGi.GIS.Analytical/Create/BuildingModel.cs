@@ -152,7 +152,7 @@ namespace DiGi.GIS.Analytical
         /// <param name="polygonalFace3D">The base polygonal face to extrude.</param>
         /// <param name="storeys">The number of storeys to generate.</param>
         /// <param name="storeyHeight">The height of each storey in meters.</param>
-        /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
+        /// <param name="tolerance">The distance tolerance for geometric calculations. A footprint whose area is below it cannot carry a floor, and the method then returns null rather than a model of walls with no floor or roof.</param>
         /// <returns>A <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> if successful; otherwise, null.</returns>
         public static BuildingModel? BuildingModel(this IPolygonalFace3D? polygonalFace3D, ushort storeys, double storeyHeight = 3.0, double tolerance = Core.Constants.Tolerance.Distance)
         {
@@ -196,19 +196,24 @@ namespace DiGi.GIS.Analytical
                 Space space = new(internalPoint, $"Storey {i + 1}");
                 result.Update(space);
 
+                // A footprint too small to carry a floor carries no roof either, while its edges may still be long
+                // enough for walls - so it used to come out as walls around nothing, a model with no envelope.
+                // Every storey projects the same footprint, so a rejected floor means the whole model is rejected.
                 FaceFloor? faceFloor = DiGi.Analytical.Building.Create.FaceFloor(polygonalFace3D_Project, tolerance);
-                if (faceFloor is not null)
+                if (faceFloor is null)
                 {
-                    result.Update(faceFloor);
+                    return null;
+                }
 
-                    if (space_Last is not null)
-                    {
-                        result.Assign(faceFloor, space, space_Last);
-                    }
-                    else
-                    {
-                        result.Assign(faceFloor, space);
-                    }
+                result.Update(faceFloor);
+
+                if (space_Last is not null)
+                {
+                    result.Assign(faceFloor, space, space_Last);
+                }
+                else
+                {
+                    result.Assign(faceFloor, space);
                 }
 
                 space_Last = space;
@@ -296,7 +301,7 @@ namespace DiGi.GIS.Analytical
 
         /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 3D building and refines it with the data carried by the matching 2D building.
-        /// <para>The model is built from the 3D geometry of <paramref name="building"/>. When that geometry is missing or cannot be converted, the model is extruded from the footprint of <paramref name="building2D"/> at <see cref="Constants.StoreyHeight.Default"/>, starting from <paramref name="elevation"/>.</para>
+        /// <para>The model is built from the 3D geometry of <paramref name="building"/>. When that geometry is missing or cannot be converted, the model is extruded from the footprint of <paramref name="building2D"/> at <see cref="Constants.StoreyHeight.Default"/>, starting from <paramref name="elevation"/>. The footprint is extruded as well when the 3D geometry converts to fewer than four surfaces, since such a model can never enclose a volume.</para>
         /// <para>The storey count of <paramref name="building2D"/> is used to cut the model into storeys. The storey height is derived from the extents of the model, rounded down to <see cref="Constants.StoreyHeight.Precision"/>, and the cutting planes are measured downwards from the top of the model so that the rounding remainder is left to the lowest storey. Nothing is cut when the derived storey height is below <see cref="Constants.StoreyHeight.Min"/>.</para>
         /// <para>A storey height above <see cref="Constants.StoreyHeight.Max"/> is handled by the function of the building. For a non residential building the storey height is clamped to <see cref="Constants.StoreyHeight.Max"/> and the storey count is kept, so the whole remainder is left to the lowest storey. For a residential building the storey count is treated as unreliable instead and recalculated from the extents of the model at <see cref="Constants.StoreyHeight.Default"/>, the storey height being derived again from that count - the resulting model may therefore hold a different number of storeys than <see cref="Building2D.Storeys"/>. When even the recalculated storey height stays above <see cref="Constants.StoreyHeight.Max"/> the model is returned unsplit.</para>
         /// <para>The building reference (<see cref="GISGuidObject2D.Reference"/>) is carried over to <see cref="BuildingModelParameter.Reference"/>.</para>
@@ -328,7 +333,16 @@ namespace DiGi.GIS.Analytical
 
             double effectiveTolerance = tolerance;
             Polyhedron? polyhedron = building?.Polyhedron();
-            if (polyhedron is not null && !polyhedron.IsClosed(effectiveTolerance))
+
+            // No polyhedron means fewer than four converted surfaces, which can never enclose a volume. The 3D geometry
+            // is then unusable rather than merely imprecise - a sliver ground or roof ring is dropped by the CityGML
+            // conversion while its walls survive (DiGi.GIS.Analytical#1) - so the footprint is extruded instead.
+            if (polyhedron is null)
+            {
+                return BuildingModel(building2D, elevation, Constants.StoreyHeight.Default, effectiveTolerance);
+            }
+
+            if (!polyhedron.IsClosed(effectiveTolerance))
             {
                 candidateTolerances ??= [0.02, Constants.Tolerance.Enclosure, 0.1];
 
