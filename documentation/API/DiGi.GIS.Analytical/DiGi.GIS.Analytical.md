@@ -111,6 +111,8 @@ Creates a [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.mic
 
 The tolerance defaults to [Coordinate](DiGi.GIS.Analytical.Constants.md#DiGi.GIS.Analytical.Constants.Tolerance.Coordinate 'DiGi\.GIS\.Analytical\.Constants\.Tolerance\.Coordinate') rather than [DiGi\.Core\.Constants\.Tolerance\.Distance](https://learn.microsoft.com/en-us/dotnet/api/digi.core.constants.tolerance.distance 'DiGi\.Core\.Constants\.Tolerance\.Distance') because the coordinates of the national 3D building model carry two decimal places - joining its boundary surfaces at a finer tolerance leaves the assembled rings open at the corners. Pass an explicit tolerance when the building comes from a more precise source.
 
+A building whose surfaces convert to fewer than four faces cannot enclose a volume, and null is returned rather than a model of walls with no floor or roof.
+
 ```csharp
 public static DiGi.Analytical.Building.Classes.BuildingModel? BuildingModel(this DiGi.CityGML.Classes.Building? building, double tolerance=0.01);
 ```

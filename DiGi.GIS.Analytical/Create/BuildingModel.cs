@@ -46,6 +46,7 @@ namespace DiGi.GIS.Analytical
         /// <summary>
         /// Creates a <see cref="DiGi.Analytical.Building.Classes.BuildingModel"/> from a 3D building object.
         /// <para>The tolerance defaults to <see cref="Constants.Tolerance.Coordinate"/> rather than <see cref="Core.Constants.Tolerance.Distance"/> because the coordinates of the national 3D building model carry two decimal places - joining its boundary surfaces at a finer tolerance leaves the assembled rings open at the corners. Pass an explicit tolerance when the building comes from a more precise source.</para>
+        /// <para>A building whose surfaces convert to fewer than four faces cannot enclose a volume, and null is returned rather than a model of walls with no floor or roof.</para>
         /// </summary>
         /// <param name="building">The 3D building object.</param>
         /// <param name="tolerance">The distance tolerance for geometric calculations.</param>
@@ -63,7 +64,15 @@ namespace DiGi.GIS.Analytical
                 return null;
             }
 
+            // No polyhedron means fewer than four converted surfaces, which can never enclose a volume. The 3D geometry
+            // is then unusable rather than merely imprecise - a sliver ground or roof ring is dropped by the CityGML
+            // conversion while its walls survive (DiGi.GIS.Analytical#1) - and a model built from it would be walls
+            // around nothing, so null is returned and the callers extrude the footprint instead.
             Polyhedron? polyhedron = building.Polyhedron();
+            if (polyhedron is null)
+            {
+                return null;
+            }
 
             BuildingModel result = new();
 
@@ -86,7 +95,7 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
-            Space space = new(polyhedron?.GetInternalPoint(), building.UniqueId);
+            Space space = new(polyhedron.GetInternalPoint(), building.UniqueId);
             result.Update(space);
             foreach (IComponent component in components)
             {
@@ -238,19 +247,23 @@ namespace DiGi.GIS.Analytical
                 }
             }
 
-            if (space_Last is not null)
+            // Every storey was skipped - the footprint could not be projected or has no internal point - so the model
+            // would hold no space and no component, which is no more usable than one with walls alone.
+            if (space_Last is null)
             {
-                Plane plane_Max = Geometry.Spatial.Create.Plane(minElevation + (storeys * storeyHeight))!;
+                return null;
+            }
 
-                IPolygonalFace3D? polygonalFace3D_Roof = plane_Max.Project<IPolygonalFace3D>(polygonalFace3D);
-                if (polygonalFace3D_Roof is not null)
+            Plane plane_Max = Geometry.Spatial.Create.Plane(minElevation + (storeys * storeyHeight))!;
+
+            IPolygonalFace3D? polygonalFace3D_Roof = plane_Max.Project<IPolygonalFace3D>(polygonalFace3D);
+            if (polygonalFace3D_Roof is not null)
+            {
+                SurfaceRoof? surfaceRoof = DiGi.Analytical.Building.Create.SurfaceRoof(polygonalFace3D_Roof, tolerance);
+                if (surfaceRoof is not null)
                 {
-                    SurfaceRoof? surfaceRoof = DiGi.Analytical.Building.Create.SurfaceRoof(polygonalFace3D_Roof, tolerance);
-                    if (surfaceRoof is not null)
-                    {
-                        result.Update(surfaceRoof);
-                        result.Assign(surfaceRoof, space_Last);
-                    }
+                    result.Update(surfaceRoof);
+                    result.Assign(surfaceRoof, space_Last);
                 }
             }
 
@@ -333,16 +346,7 @@ namespace DiGi.GIS.Analytical
 
             double effectiveTolerance = tolerance;
             Polyhedron? polyhedron = building?.Polyhedron();
-
-            // No polyhedron means fewer than four converted surfaces, which can never enclose a volume. The 3D geometry
-            // is then unusable rather than merely imprecise - a sliver ground or roof ring is dropped by the CityGML
-            // conversion while its walls survive (DiGi.GIS.Analytical#1) - so the footprint is extruded instead.
-            if (polyhedron is null)
-            {
-                return BuildingModel(building2D, elevation, Constants.StoreyHeight.Default, effectiveTolerance);
-            }
-
-            if (!polyhedron.IsClosed(effectiveTolerance))
+            if (polyhedron is not null && !polyhedron.IsClosed(effectiveTolerance))
             {
                 candidateTolerances ??= [0.02, Constants.Tolerance.Enclosure, 0.1];
 
