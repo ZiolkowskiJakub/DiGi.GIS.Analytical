@@ -112,6 +112,9 @@ namespace DiGi.GIS.Analytical
                 result.SetValue(BuildingModelParameter.Code, code);
             }
 
+            // Stamps the WGS 84 coordinates and the Polish standard-time UTC for solar analysis (DiGi.GIS.WebAPI.UI#56).
+            result.UpdateBuildingInformation();
+
             return result;
         }
 
@@ -307,6 +310,9 @@ namespace DiGi.GIS.Analytical
                 {
                     result.SetValue(BuildingModelParameter.Reference, building2D.Reference, new SetValueSettings(true, false));
                 }
+
+                // Stamps the WGS 84 coordinates and the Polish standard-time UTC for solar analysis (DiGi.GIS.WebAPI.UI#56).
+                result.UpdateBuildingInformation();
             }
 
             return result;

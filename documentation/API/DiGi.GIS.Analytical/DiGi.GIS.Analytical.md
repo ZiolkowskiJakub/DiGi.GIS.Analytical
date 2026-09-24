@@ -568,6 +568,42 @@ The distance tolerance for geometric calculations\.
 [DiGi\.Analytical\.Building\.Interfaces\.IComponent](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.interfaces.icomponent 'DiGi\.Analytical\.Building\.Interfaces\.IComponent')  
 A building component \([DiGi\.Analytical\.Building\.Interfaces\.IComponent](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.interfaces.icomponent 'DiGi\.Analytical\.Building\.Interfaces\.IComponent')\) such as a wall, floor, or roof; otherwise, `null` if the face's normal cannot be determined\.
 
+<a name='DiGi.GIS.Analytical.Modify'></a>
+
+## Modify Class
+
+```csharp
+public static class Modify
+```
+
+Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system.object 'System\.Object') → Modify
+### Methods
+
+<a name='DiGi.GIS.Analytical.Modify.UpdateBuildingInformation(thisDiGi.Analytical.Building.Classes.BuildingModel)'></a>
+
+## Modify\.UpdateBuildingInformation\(this BuildingModel\) Method
+
+Sets the WGS 84 coordinates and the Polish standard time zone on the model's [DiGi\.Analytical\.Building\.Classes\.BuildingModel\.BuildingInformation](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel.buildinginformation 'DiGi\.Analytical\.Building\.Classes\.BuildingModel\.BuildingInformation')\.
+
+The coordinates are the WGS 84 conversion of the centre of the model's bounding box, whose geometry is in EPSG:2180. The UTC offset is fixed to [DiGi\.Core\.Enums\.UTC\.Plus0100](https://learn.microsoft.com/en-us/dotnet/api/digi.core.enums.utc.plus0100 'DiGi\.Core\.Enums\.UTC\.Plus0100') (CET), deliberately without daylight saving: a shading model holds one offset for its whole life, so a solve over a date range would be wrong by one hour for half of every year if the offset switched with the season. Every time given to the solver is local standard time; a caller holding wall-clock summer time subtracts one hour before solving.
+
+The method is idempotent: it always overwrites and never reads the previous values, so the unlocated default of (0, 0) is never treated as "already set". The [DiGi\.Analytical\.Building\.Classes\.BuildingInformation\.Address](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildinginformation.address 'DiGi\.Analytical\.Building\.Classes\.BuildingInformation\.Address') is preserved through the copy constructor.
+
+```csharp
+public static bool UpdateBuildingInformation(this DiGi.Analytical.Building.Classes.BuildingModel? buildingModel);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Modify.UpdateBuildingInformation(thisDiGi.Analytical.Building.Classes.BuildingModel).buildingModel'></a>
+
+`buildingModel` [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')
+
+The building model to locate\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+[false](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool 'https://docs\.microsoft\.com/en\-us/dotnet/csharp/language\-reference/builtin\-types/bool') when the model is null, has no bounding box, or the bounding\-box centre converts to a WGS 84 position outside the Polish range \(latitude \[48\.9, 55\.0\], longitude \[14\.05, 24\.25\]\) \- in which case the geometry is not in EPSG:2180 and the model is left unchanged\.
+
 <a name='DiGi.GIS.Analytical.Query'></a>
 
 ## Query Class
