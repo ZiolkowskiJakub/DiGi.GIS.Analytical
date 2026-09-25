@@ -400,6 +400,10 @@ namespace DiGi.GIS.Analytical
                 }
 
                 buildingModel.SetValue(BuildingModelParameter.Reference, building2Ds_Unidentified[i].Reference, new Core.Parameter.Classes.SetValueSettings(true, false));
+
+                // Stamps the WGS 84 coordinates and the Polish standard-time UTC for solar analysis (DiGi.GIS.WebAPI.UI#56).
+                buildingModel.UpdateBuildingInformation();
+
                 result.Add(buildingModel);
                 building2Ds_Unidentified.RemoveAt(i);
             }

@@ -746,3 +746,26 @@ The angular tolerance used to determine if the vector is horizontal\.
 #### Returns
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 `true` if the vector is horizontal within the specified tolerance; otherwise, `false`\.
+
+<a name='DiGi.GIS.Analytical.Query.IsLocated(thisDiGi.Analytical.Building.Classes.BuildingModel)'></a>
+
+## Query\.IsLocated\(this BuildingModel\) Method
+
+Checks that the building model carries a located [DiGi\.Analytical\.Building\.Classes\.BuildingModel\.BuildingInformation](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel.buildinginformation 'DiGi\.Analytical\.Building\.Classes\.BuildingModel\.BuildingInformation')\.
+
+True when all three conditions hold: the [DiGi\.Analytical\.Building\.Classes\.BuildingInformation\.Coordinates](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildinginformation.coordinates 'DiGi\.Analytical\.Building\.Classes\.BuildingInformation\.Coordinates') is not null, it is not the unlocated (0, 0) default, and the [DiGi\.Analytical\.Building\.Classes\.BuildingInformation\.UTC](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildinginformation.utc 'DiGi\.Analytical\.Building\.Classes\.BuildingInformation\.UTC') is not [DiGi\.Core\.Enums\.UTC\.Undefined](https://learn.microsoft.com/en-us/dotnet/api/digi.core.enums.utc.undefined 'DiGi\.Core\.Enums\.UTC\.Undefined'). A model failing any one of the three still computes its sun path at (0, 0) or with a not-a-number offset, so it is unlocated even when the other conditions hold.
+
+```csharp
+public static bool IsLocated(this DiGi.Analytical.Building.Classes.BuildingModel? buildingModel);
+```
+#### Parameters
+
+<a name='DiGi.GIS.Analytical.Query.IsLocated(thisDiGi.Analytical.Building.Classes.BuildingModel).buildingModel'></a>
+
+`buildingModel` [DiGi\.Analytical\.Building\.Classes\.BuildingModel](https://learn.microsoft.com/en-us/dotnet/api/digi.analytical.building.classes.buildingmodel 'DiGi\.Analytical\.Building\.Classes\.BuildingModel')
+
+The building model to check\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+[true](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool 'https://docs\.microsoft\.com/en\-us/dotnet/csharp/language\-reference/builtin\-types/bool') when the building model carries located coordinates and a defined UTC offset; otherwise, [false](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool 'https://docs\.microsoft\.com/en\-us/dotnet/csharp/language\-reference/builtin\-types/bool')\.
